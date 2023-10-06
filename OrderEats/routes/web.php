@@ -1,5 +1,6 @@
 <?php
-
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReviewController;
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -18,4 +19,9 @@ $router->get('/', function () use ($router) {
 });
 
 $router->get('/testDB', 'Controller@checkConnection');
+Route::get('/reviews' , 'ReviewController@index');
+Route::get('/reviews/{id}' , 'ReviewController@show');
+Route::post('/reviews', 'ReviewController@store');
+Route::put('/reviews/{id}', 'ReviewController@update');
+Route::delete('/reviews/{id}', 'ReviewController@destroy');
 
