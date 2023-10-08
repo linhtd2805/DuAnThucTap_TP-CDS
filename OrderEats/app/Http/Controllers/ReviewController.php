@@ -29,52 +29,69 @@ class ReviewController extends Controller
     // Thêm 
     public function store(Request $request)
     {   
-         // Xác thực inputs
-        if (($errors = $this->doValidate($request)) && count($errors) > 0) {
-            return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
-        }
+        try {
+            // Xác thực inputs
+            if (($errors = $this->doValidate($request)) && count($errors) > 0) {
+                return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
+            }
 
-        $reviews = new Review();
-        $reviews-> order_id = $request->get("order_id");
-        $reviews-> user_id = $request->get("user_id");
-        $reviews-> shipper_id = $request->get("shipper_id");
-        $reviews-> rating = $request->get('rating');
-        $reviews-> comment = $request->get('comment');
-        $reviews-> date = $request->get('date');
-
-        $reviews->save();
-        return response()->json(['message' => 'Thêm Đánh giá thành công !']); 
-    }
-
-    // Cập Nhật
-    public function update(Request $request, $id)
-    {
-        // Xác thực inputs
-        if (($errors = $this->doValidate($request)) && count($errors) > 0) {
-            return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
-        }
-        // Sửa vào CSDL theo id
-        $reviews = Review::where('review_id', $id)->first();
-        if (!$reviews) {
-            return response()->json(['message' => 'Không tìm thấy '], 404);
-        }else{
+            $reviews = new Review();
             $reviews-> order_id = $request->get("order_id");
             $reviews-> user_id = $request->get("user_id");
             $reviews-> shipper_id = $request->get("shipper_id");
             $reviews-> rating = $request->get('rating');
             $reviews-> comment = $request->get('comment');
             $reviews-> date = $request->get('date');
+
             $reviews->save();
-        }
-        return response()->json(['message' => 'Cập nhật thành công !']); 
+            return response()->json(['message' => 'Thêm Đánh giá thành công !']); 
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Thêm Đánh giá thất bại !'], 409); 
+        }    
+    }
+
+    // Cập Nhật
+    public function update(Request $request, $id)
+    {   
+        try {
+            // Xác thực inputs
+            if (($errors = $this->doValidate($request)) && count($errors) > 0) {
+                return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
+            }
+            // Sửa vào CSDL theo id
+            $reviews = Review::where('review_id', $id)->first();
+            if (!$reviews) {
+                return response()->json(['message' => 'Không tìm thấy '], 404);
+            }else{
+                $reviews-> order_id = $request->get("order_id");
+                $reviews-> user_id = $request->get("user_id");
+                $reviews-> shipper_id = $request->get("shipper_id");
+                $reviews-> rating = $request->get('rating');
+                $reviews-> comment = $request->get('comment');
+                $reviews-> date = $request->get('date');
+                $reviews->save();
+            }
+            return response()->json(['message' => 'Cập nhật thành công !']); 
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Cập nhật thất bại !'], 409); 
+        }  
     }
 
     // Xóa theo id
     public function destroy($id)
     {
-      $reviews = Review::where('review_id', $id)->first();
-      $reviews->delete();
-      return response()->json("Xóa thành công !");
+        try {
+            $reviews = Review::where('review_id', $id)->first();
+            if (!$reviews) {
+                return response()->json(['message' => 'Không tìm thấy '], 404);
+            }else{
+                $reviews->delete();
+                return response()->json("Xóa thành công !");
+            }       
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Xóa thất bại !'], 409); 
+        }
     }
 
     public function doValidate($request) {
