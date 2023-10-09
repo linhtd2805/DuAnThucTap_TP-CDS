@@ -29,11 +29,11 @@
             <tbody>
               @foreach($reviews as $item)
                 <tr>
-                    <th>{{$item['user_id']}}</th>
-                    <th>{{$item['user_id']}}</th>
-                    <th>{{$item['rating']}}</th>
-                    <th>{{$item['comment']}}</th>
-                    <th>{{$item['date']}}</th>
+                    <th>{{$item->orders->quantity}}</th>
+                    <!-- <th>{{$item['user_id']}}</th> -->
+                    <!-- <td>{{ $item->user_id }}</td> -->
+                    <!-- <th>{{$item['comment']}}</th>
+                    <th>{{$item['date']}}</th> -->
                 </tr>
               @endforeach
             </tbody>

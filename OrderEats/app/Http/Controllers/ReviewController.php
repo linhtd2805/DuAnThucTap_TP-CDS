@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Review;
+use App\Models\Reviews;
 use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
@@ -11,7 +11,8 @@ class ReviewController extends Controller
     //All Data
     public function index()
     {
-        $reviews = Review::all();
+        // $reviews = Reviews::all();
+        $reviews = Reviews::with('orders')->get();
         return view('reviews', ['reviews' => $reviews]);
         // return response()->json($reviews);
     }
@@ -19,7 +20,7 @@ class ReviewController extends Controller
     // Hiển thị theo id
     public function show($id)
     {
-        $reviews = Review::where('review_id', $id)->first();
+        $reviews = Reviews::where('review_id', $id)->first();
         if (!$reviews) {
             return response()->json(['message' => 'Không tìm thấy'], 404);
         }
@@ -35,10 +36,8 @@ class ReviewController extends Controller
                 return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
             }
 
-            $reviews = new Review();
+            $reviews = new Reviews();
             $reviews-> order_id = $request->get("order_id");
-            $reviews-> user_id = $request->get("user_id");
-            $reviews-> shipper_id = $request->get("shipper_id");
             $reviews-> rating = $request->get('rating');
             $reviews-> comment = $request->get('comment');
             $reviews-> date = $request->get('date');
@@ -60,13 +59,11 @@ class ReviewController extends Controller
                 return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
             }
             // Sửa vào CSDL theo id
-            $reviews = Review::where('review_id', $id)->first();
+            $reviews = Reviews::where('review_id', $id)->first();
             if (!$reviews) {
                 return response()->json(['message' => 'Không tìm thấy '], 404);
             }else{
                 $reviews-> order_id = $request->get("order_id");
-                $reviews-> user_id = $request->get("user_id");
-                $reviews-> shipper_id = $request->get("shipper_id");
                 $reviews-> rating = $request->get('rating');
                 $reviews-> comment = $request->get('comment');
                 $reviews-> date = $request->get('date');
@@ -82,7 +79,7 @@ class ReviewController extends Controller
     public function destroy($id)
     {
         try {
-            $reviews = Review::where('review_id', $id)->first();
+            $reviews = Reviews::where('review_id', $id)->first();
             if (!$reviews) {
                 return response()->json(['message' => 'Không tìm thấy '], 404);
             }else{
@@ -99,8 +96,6 @@ class ReviewController extends Controller
             "rating" => "required|numeric",
             "comment" => "required",
             "order_id" => "required",
-            "user_id" => "required",
-            "shipper_id" => "required",
             "date" => "required|date_format:Y-m-d",
         ];
 
