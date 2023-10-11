@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Reviews;
 use App\Models\Orders;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
@@ -14,8 +15,8 @@ class ReviewController extends Controller
     {
         $reviews = Reviews::with('orders', 'user')->get();
         $orders = Orders::all();
-        return view('reviews', compact('reviews', 'orders'));
-        // return response()->json($reviews);
+        // return view('reviews', compact('reviews', 'orders'));
+        return response()->json($reviews, $orders);
     }
 
     // Hiển thị theo id

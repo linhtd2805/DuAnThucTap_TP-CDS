@@ -25,39 +25,44 @@ class RegisterController extends Controller
     {
         $validator = Validator::make($request->only('username', 'email', 'password', 'password_confirmation'), [
             'username' => 'required|string|unique:users',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users',
             'password' => 'required|confirmed',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['success' => 0, 'message' => 'Please fix these errors', 'errors' => $validator->errors()], 500);
+            return response()->json(['success' => 0, 'message' => 'Không bỏ trống!', 'errors' => $validator->errors()], 500);
         }
 
         try {
 
             $user = new User();
-            $user->name = $request->get('username');
+            $user->username = $request->get('username');
             $user->email = $request->get('email');
-            $plainPassword = $request->get('password');
             $user->role_id = 3; //User;
+            $plainPassword = $request->get('password');
             $user->password = app('hash')->make($plainPassword);
-            return response()->json($user);
-            // $user->save();
+            
+            // $user->fullname = "";
+            // $user->phone="";
+            // $user->latitude=0;
+            // $user->longitude=0;
 
-            // $token = auth()->tokenById($user->id);
+            $user->save();
 
-            // return response()->json([
-            //     'success' => 1,
-            //     'message' => 'User Registration Succesful!',
-            //     'access_token' => $token,
-            //     'token_type' => 'bearer',
-            //     'user' => $user,
-            //     'expires_in' => auth()->factory()->getTTL() * 60
+            $token = auth()->tokenById($user->id);
 
-            // ]);
+            return response()->json([
+                'message' => 'Đăng Ký thành công!',
+                'success' => 1,
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'user' => $user,
+                'expires_in' => auth()->factory()->getTTL() * 60
+
+            ]);
         } catch (\Exception $e) {
             //return error message
-            return response()->json(['success' => 0, 'message' => 'User Registration Failed!'], 409);
+            return response()->json(['success' => 0, 'message' => 'Đăng Ký thất bại!'], 409);
         }
     }
 }

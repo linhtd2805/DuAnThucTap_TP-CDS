@@ -16,8 +16,6 @@
     <div class="container">
         <h2>Bảng Thông Tin Đánh Giá Shipper</h2>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Thêm đánh giá</button>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal"> đánh giá</button>
-        <hr>
         <table id="myTable" class="display">
             <thead>
                 <tr>
@@ -38,7 +36,7 @@
                     <th>{{$item->comment}}</th>
                     <th>{{$item->date}}</th>
                     <th>
-                        <a type="submit" href="/reviews/{{$item->id}}" data-toggle="modal" data-target="#addModal">Edit</a>
+                        <a type="submit" href="/reviews/{{$item->id}}">Edit</a>
                     </th>
                 </tr>
               @endforeach

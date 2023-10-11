@@ -13,14 +13,29 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
-    
+<h1>Chi Tiết Bình Luận</h1>    
 
-<form action="" method="GET" enctype="multipart/form-data">
-            <div>
-                <label for="">Đánh Giá:</label>
-                <input type="text" value = "{{ $reviews->comment }}"> <br>
-                <input type="number" name="{{ $reviews->rating }}" value="{{ $reviews->rating }}">
-            </div>
-        </form>
+<form action="" method="POST" enctype="multipart/form-data">
+    <div>
+        <label for="">Người Đặt:</label>
+        <input type="text" name="{{ $reviews->orders->user->fullname}}">
+    </div>
+    <div>
+        <label for="">Người Ship:</label>
+        <input type="text" name="{{ $reviews->orders->user->fullname}}">
+    </div>
+    <div>
+        <label for="">Đánh Giá:</label>
+        <input type="number" name="{{ $reviews->rating }}" value="{{ $reviews->rating }}">
+    </div>
+    <div>
+        <label for="">Bình Luận:</label>
+        <input type="text" value = "{{ $reviews->comment }}"> <br>
+    </div>
+    <div>
+        <label for="">Ngày:</label>
+        <input type="date" value = "{{ $reviews-> date }}">
+    </div>
+</form>
 </body>
 </html>

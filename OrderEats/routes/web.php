@@ -28,11 +28,19 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get('/protected', function () {
         return response()->json(['message' => 'Access to protected resources granted!']);
     });
+
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login'); 
     Route::post('/register', 'Auth\\RegisterController@register');
+    Route::post('/logout', 'Auth\\LoginController@logout');   
 });
-    
 
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+    Route::get('/logout', 'Auth\\LoginController@logout');   
+});
