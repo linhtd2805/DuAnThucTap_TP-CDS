@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ReviewController;
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -24,4 +23,16 @@ Route::get('/reviews/{id}' , 'ReviewController@show');
 Route::post('/reviews', 'ReviewController@store');
 Route::put('/reviews/{id}', 'ReviewController@update');
 Route::delete('/reviews/{id}', 'ReviewController@destroy');
+
+Route::group(['middleware' => ['jwt.auth']], function () {
+    Route::get('/protected', function () {
+        return response()->json(['message' => 'Access to protected resources granted!']);
+    });
+});
+
+$router->group(['prefix' => 'api'], function () use ($router) {
+    Route::post('/login', 'Auth\\LoginController@login'); 
+    Route::post('/register', 'Auth\\RegisterController@register');
+});
+    
 

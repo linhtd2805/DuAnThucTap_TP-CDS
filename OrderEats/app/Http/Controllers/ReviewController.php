@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Reviews;
+use App\Models\Orders;
 use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
@@ -11,20 +12,21 @@ class ReviewController extends Controller
     //All Data
     public function index()
     {
-        // $reviews = Reviews::all();
-        $reviews = Reviews::with('orders')->get();
-        return view('reviews', ['reviews' => $reviews]);
+        $reviews = Reviews::with('orders', 'user')->get();
+        $orders = Orders::all();
+        return view('reviews', compact('reviews', 'orders'));
         // return response()->json($reviews);
     }
 
     // Hiển thị theo id
     public function show($id)
     {
-        $reviews = Reviews::where('review_id', $id)->first();
+        $reviews = Reviews::where('id', $id)->first();
         if (!$reviews) {
             return response()->json(['message' => 'Không tìm thấy'], 404);
         }
-        return response()->json($reviews);
+        // return response()->json($reviews);
+        return view('reviews1', compact('reviews'));
     }
 
     // Thêm 
@@ -40,7 +42,7 @@ class ReviewController extends Controller
             $reviews-> order_id = $request->get("order_id");
             $reviews-> rating = $request->get('rating');
             $reviews-> comment = $request->get('comment');
-            $reviews-> date = $request->get('date');
+            $reviews-> date = date('Y-m-d', time());
 
             $reviews->save();
             return response()->json(['message' => 'Thêm Đánh giá thành công !']); 
@@ -96,7 +98,7 @@ class ReviewController extends Controller
             "rating" => "required|numeric",
             "comment" => "required",
             "order_id" => "required",
-            "date" => "required|date_format:Y-m-d",
+            // "date" => "required|date_format:Y-m-d",
         ];
 
         $validator = Validator::make($request->all(), $data);
