@@ -35,8 +35,8 @@ class Authenticate extends BaseMiddleware
      * @param  string|null  $guard
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
-    {
+    public function handle($request, Closure $next, $guard = null) 
+    {   // Kiểm tra đăng nhập
         if ($this->auth->guard($guard)->guest()) {
             return response('Unauthorized.', 401);
         }

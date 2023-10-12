@@ -72,11 +72,8 @@ class LoginController extends Controller
     function logout()
     {
         $token = auth()->tokenById(auth()->user()->id);
-
         $this->jwt->setToken($token)->invalidate();
-
         auth()->logout();
-
         return response()->json([
             'success' => 1,
             'message' => 'Đăng Xuất thành công!'
@@ -97,43 +94,51 @@ class LoginController extends Controller
         $user = Auth::user();
 
         $rules = [
-            'name' => 'required|string',
-            'username' => 'required|unique:users,username,' . $user->id
+            'fullname' => 'required|string',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'required',
+            'longitude' => 'required',
+            'latitude' => 'required',
+            // 'username' => 'required|unique:users,username,' . $user->id
         ];
 
         if ($request->input('password') != "") {
             $rules['password'] = 'required|min:4|confirmed';
         }
 
-        $validator = Validator::make($request->only('name', 'username', 'password', 'password_confirmation'), $rules);
+        $validator = Validator::make($request->only('fullname', 'email', 'password', 'password_confirmation', 'phone', 'latitude', 'longitude'), $rules);
 
         if ($validator->fails()) {
-            return response()->json(['success' => 0, 'message' => 'Please fix these errors', 'errors' => $validator->errors()], 500);
+            return response()->json(['success' => 0, 'message' => 'Không bỏ trống!', 'errors' => $validator->errors()], 500);
         }
 
         try {
 
-            $user->name = $request->input('name');
-            $user->username = $request->input('username');
+            $user->fullname = $request->input('fullname');
+            $user->phone = $request->input('phone');
+            $user->longitude = $request->input('longitude');
+            $user->latitude = $request->input('latitude');
 
             if ($request->input('password') != "") {
                 $plainPassword = $request->input('password');
                 $user->password = app('hash')->make($plainPassword);
             }
-
-            $user->save();
-
+            try {
+                $user->save();
+            }catch (\Exception $e) {
+                return response()->json($e);
+            }
             $token = auth()->tokenById($user->id);
 
             return response()->json([
                 'success' => 1,
-                'message' => 'User profile updated successfully!',
+                'message' => 'Cập nhật hồ sơ thành công!',
                 'access_token' => $token,
                 'user' => $user
             ]);
         } catch (\Exception $e) {
             //return error message
-            return response()->json(['success' => 0, 'message' => 'User profile update failed!'], 409);
+            return response()->json(['success' => 0, 'message' => 'Cập nhật hồ sơ thất bại!'], 409);
         }
     }
 }

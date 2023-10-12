@@ -15,13 +15,10 @@ class CreateMenusesTable extends Migration
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('restaurant_id');
             $table->string('item_name');
             $table->text('description');
             $table->decimal('price', 8, 2);
             $table->timestamps();
-    
-            $table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
         });
     }
 
