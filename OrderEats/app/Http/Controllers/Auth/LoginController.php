@@ -98,7 +98,7 @@ class LoginController extends Controller
 
         $rules = [
             'name' => 'required|string',
-            'username' => 'required|username|unique:users,username,' . $user->id
+            'username' => 'required|unique:users,username,' . $user->id
         ];
 
         if ($request->input('password') != "") {

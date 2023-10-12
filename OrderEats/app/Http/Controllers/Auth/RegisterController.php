@@ -42,10 +42,10 @@ class RegisterController extends Controller
             $plainPassword = $request->get('password');
             $user->password = app('hash')->make($plainPassword);
             
-            // $user->fullname = "";
-            // $user->phone="";
-            // $user->latitude=0;
-            // $user->longitude=0;
+            $user->fullname = "";
+            $user->phone="";
+            $user->latitude=0;
+            $user->longitude=0;
 
             $user->save();
 

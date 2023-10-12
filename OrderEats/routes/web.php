@@ -35,12 +35,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login'); 
     Route::post('/register', 'Auth\\RegisterController@register');
     Route::post('/logout', 'Auth\\LoginController@logout');   
-});
-
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
-
-], function ($router) {
-    Route::get('/logout', 'Auth\\LoginController@logout');   
+    Route::get('/me', 'Auth\\LoginController@userDetails');  
+    Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
+    Route::post('/update-profile', 'Auth\\LoginController@updateProfile');   
 });
