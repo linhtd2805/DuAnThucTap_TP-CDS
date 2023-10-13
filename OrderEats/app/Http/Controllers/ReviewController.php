@@ -15,8 +15,8 @@ class ReviewController extends Controller
     {
         $reviews = Reviews::with('orders', 'user')->get();
         $orders = Orders::all();
-        // return view('reviews', compact('reviews', 'orders'));
-        return response()->json($reviews, $orders);
+        return view('reviews', compact('reviews', 'orders'));
+        // return response()->json($reviews, $orders);
     }
 
     // Hiển thị theo id
