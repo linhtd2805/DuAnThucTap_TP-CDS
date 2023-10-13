@@ -24,6 +24,8 @@ Route::post('/reviews', 'ReviewController@store');
 Route::put('/reviews/{id}', 'ReviewController@update');
 Route::delete('/reviews/{id}', 'ReviewController@destroy');
 
+Route::get('/firebase', 'FirebaseController@getFirebase');
+
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get('/protected', function () {
         return response()->json(['message' => 'Access to protected resources granted!']);

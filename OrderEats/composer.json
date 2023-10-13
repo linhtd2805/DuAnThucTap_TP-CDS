@@ -8,6 +8,7 @@
         "php": "^7.3|^8.0",
         "flipbox/lumen-generator": "^9.2",
         "kreait/firebase-php": "^5.26",
+        "kreait/laravel-firebase": "^3.4",
         "laravel/lumen-framework": "^8.3.1",
         "tymon/jwt-auth": "^1.0@dev"
     },
