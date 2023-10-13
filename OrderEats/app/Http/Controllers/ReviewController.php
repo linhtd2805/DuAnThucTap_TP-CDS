@@ -26,8 +26,8 @@ class ReviewController extends Controller
         if (!$reviews) {
             return response()->json(['message' => 'Không tìm thấy'], 404);
         }
-        // return response()->json($reviews);
-        return view('reviews1', compact('reviews'));
+         return response()->json($reviews);
+       // return view('reviews1', compact('reviews'));
     }
 
     // Thêm 
