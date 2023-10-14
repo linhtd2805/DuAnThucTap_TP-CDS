@@ -39,3 +39,19 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
     Route::post('/update-profile', 'Auth\\LoginController@updateProfile');   
 });
+
+
+/*role*/
+$router->get('/role', 'RoleController@index');
+$router->get('/role/{id}', 'RoleController@show');
+$router->post('/role', 'RoleController@create');
+$router->put('/role/{id}', 'RoleController@update');
+$router->delete('/role/{id}', 'RoleController@destroy');
+
+
+// user
+$router->get('/user', 'UserController@index');
+$router->get('/user/{id}', 'UserController@show');
+$router->post('/user', 'UserController@create');
+$router->put('/user/{id}', 'UserController@update');
+$router->delete('/user/{id}', 'UserController@destroy');
