@@ -24,7 +24,7 @@ Route::post('/reviews', 'ReviewController@store');
 Route::put('/reviews/{id}', 'ReviewController@update');
 Route::delete('/reviews/{id}', 'ReviewController@destroy');
 
-Route::get('/firebase', 'FirebaseController@getFirebase');
+Route::get('/firebase', 'FirebaseController@sendFcmMessage');
 
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get('/protected', function () {

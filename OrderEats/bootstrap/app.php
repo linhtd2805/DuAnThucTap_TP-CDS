@@ -60,7 +60,6 @@ $app->singleton(
 */
 
 $app->configure('app');
-$app->configure('firebase');
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -95,7 +94,11 @@ $app->routeMiddleware([
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
-$app->register(Kreait\Firebase\ServiceProvider::class);
+// $app->register(Kreait\LaravelFirebase\ServiceProvider::class);
+
+
+
+
 
 /*
 |--------------------------------------------------------------------------
