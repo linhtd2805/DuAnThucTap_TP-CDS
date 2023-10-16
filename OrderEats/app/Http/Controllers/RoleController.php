@@ -8,60 +8,61 @@ use App\Models\Roles;
 
 class RoleController extends Controller
 {
-    public function index(Request $request){
-        $role = Roles::all();
-            
-            return response()->json($role);
+    public function index(Request $request)
+    {
+        $role = Roles::paginate(2); // phân trang
+
+        return response()->json($role);
     }
 
     public function show($id)
     {
-        $role = Roles::find($id);
-        
-        if(!$role) 
-        return response()->json(['message' => "Product not found!!"]);
-
-        return response()->json($role);
+        // GET(id)
+        // show each product by its ID from database
+        $roles = Roles::find($id);
+        return response()->json($roles);
     }
 
-    public function create(Request $request){
+    public function create(Request $request)
+    {
 
-        // $this->variables($request,[
-        //     'name_role' => 'required|string'
-        // ]);
+
+        $roles = new Roles();
+        // text data
+        $roles->name_role = $request->input('name_role');
+
+        $roles->save();
+        return response()->json($roles);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $this->validate($request, [
+            'name_role' => 'required'
+
+        ]);
+
+        $roles = Roles::find($id);
+
+
+        // text data
+        $roles->name_role = $request->input('name_role');
 
         $data = $request->all();
+        $roles->fill($data);
+        $roles->save();
 
-        $role = Roles::create($data);
 
-        return response()->json($role);
+        return response()->json($roles);
     }
 
-    public function update(Request $request, $id){
+    public function destroy($id)
+    {
         $role = Roles::find($id);
 
         //Error
-        if(!$role) 
-        return response()->json(['message' => "Product not found!!"]);
-
-        $data = $request->all();
-
-
-      
-
-        $role->fill($data);
-
-        $role->save();
-
-        return response()->json($role);
-    }
-
-    public function destroy($id){
-        $role = Roles::find($id);
-
-        //Error
-        if(!$role) 
-        return response()->json(['message' => "Product not found!!"]);
+        if (!$role)
+            return response()->json(['message' => "Product not found!!"]);
 
         $role->delete();
 

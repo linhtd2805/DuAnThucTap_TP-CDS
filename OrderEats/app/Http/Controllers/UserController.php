@@ -23,40 +23,35 @@ public function show($id)
     return response()->json($user);
 }
 
-public function create(Request $request){
-
-    $data = $request->all();
-
-    $user = User::create($data);
-
-    return response()->json($user);
-}
-
 public function update(Request $request, $id){
-    $user = User::find($id);
+  
+      //all it to the database
+      $user = User::find($id);
+      
 
-    //Error
-    if(!$user) 
-    return response()->json(['message' => "Product not found!!"]);
+      $user->username = $request->input('username');
+      $user->password = $request->input('password');
+      $user->fullname = $request->input('fullname');
+      $user->email = $request->input('email');
+      $user->phone = $request->input('phone');
+      $user->role_id = $request->input('role_id');
+      $user->latitude = $request->input('latitude');
+      $user->longitude = $request->input('longitude');
+      
+      $user->save();
 
-    $data = $request->all();
-
-    $user->fill($data);
-
-    $user->save();
-
-    return response()->json($user);
+      return response()->json($user);   
 }
 
-public function destroy($id){
-    $user = User::find($id);
+// public function destroy($id){
+//     $user = User::find($id);
 
-    //Error
-    if(!$user) 
-    return response()->json(['message' => "Product not found!!"]);
+//     //Error
+//     if(!$user) 
+//     return response()->json(['message' => "Product not found!!"]);
 
-    $user->delete();
+//     $user->delete();
 
-    return response()->json(['message' => 'Product success delete'], 201);
-}
+//     return response()->json(['message' => 'Product success delete'], 201);
+// }
 }
