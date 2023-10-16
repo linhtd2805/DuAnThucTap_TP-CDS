@@ -15,4 +15,10 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+
+    protected $providers = [
+        // ...
+        Kreait\Laravel\Firebase\ServiceProvider::class,
+    ];
+    
 }

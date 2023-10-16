@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Messaging\Messaging;
-use Kreait\Laravel\Firebase;
 use Illuminate\Http\Request;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 
 class FirebaseController extends Controller
 {
-        public function sendFcmMessage()
+    public function sendNotification()
     {
-        // Initialize Firebase
-        $firebase = app(Firebase::class);
+        $token = 'cE3_2LWwQA2KbCM7N9HhvX:APA91bF-yAHHu7BibgXZMeosQVrvEg5d-bx4OWNyW5qBHhnRKXLfDfELqkgEAkdBcjcySiW30mVjXmC9ySdzvK1AZRVJ4zKSZNuHW87v16B3LINQf60l5Wmfmjd5_7lP4mftUBJqqnyP';
 
-        // Create a messaging instance
-        $messaging = $firebase->getMessaging();
+$notificationData = [
+    'title' => 'Test Notification',
+    'body' => 'This is a test notification from Lumen.',
+];
 
-        // Create an FCM message
-        $message = CloudMessage::new()
-            ->withNotification(['title' => 'Hello', 'body' => 'This is a test message'])
-            ->withData(['key' => 'value']);
+$notification = Notification::fromArray($notificationData);
 
-        // Send the FCM message
-        $messaging->send($message);
+$message = CloudMessage::new()
+    ->withNotification($notification)
+    ->withTarget('token', $token);
 
-        return response('FCM message sent.');
+app('firebase.messaging')->send($message);
+
+return 'Notification sent!';
     }
+
 }
+
