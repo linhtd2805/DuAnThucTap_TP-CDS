@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Roles extends Model
 {
-      public function user()
-      {
-          return $this->belongsTo(User::class, 'user_id');
-      }
+    protected $primaryKey = 'role_id';
+    protected $table = 'roles';
+
+    protected $fillable = [
+         'name_role'
+    ];
 }
