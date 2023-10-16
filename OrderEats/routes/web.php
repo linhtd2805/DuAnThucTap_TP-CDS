@@ -49,3 +49,5 @@ $router->post('/menus/create', 'MenusController@store');
 $router->post('/menus/update/{id}', 'MenusController@update');
 $router->delete('/menus/delete/{id}', 'MenusController@destroy');
 
+
+
