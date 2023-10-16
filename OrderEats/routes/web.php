@@ -63,4 +63,9 @@ $router->get('/user', 'UserController@index');
 $router->get('/user/{id}', 'UserController@show');
 $router->put('/user/{id}', 'UserController@update');
 // $router->delete('/user/{id}', 'UserController@destroy');
-//
+
+//order
+$router->get('/orders', 'OrdersController@index');
+$router->get('/orders/{id}', 'OrdersController@show');
+$router->post('/orders', 'OrdersController@create');
+$router->delete('/orders/{id}', 'OrdersController@destroy');
