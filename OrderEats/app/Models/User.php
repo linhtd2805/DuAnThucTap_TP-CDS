@@ -15,20 +15,18 @@ class User extends Model implements JWTSubject, AuthenticatableContract, Authori
     use Authenticatable, Authorizable, HasFactory;
 
     protected $table = "users";
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+  
     protected $fillable = [
-        'email', 'username', 'password',  'role_id', 'phone', 'fullname', 'longtitude', 'latitude', 
+        'username',
+        'password',
+        'fullname',
+        'email',
+        'phone',
+        'role_id',
+        'latitude',
+        'longitude'
     ];
 
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password',
     ];

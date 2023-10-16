@@ -42,7 +42,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/update-profile', 'Auth\\LoginController@updateProfile');   
 });
 
-
+//menus
 $router->get('/menus', 'MenusController@index');
 $router->get('/menus/{id}', 'MenusController@show');
 $router->post('/menus/create', 'MenusController@store');
@@ -50,4 +50,17 @@ $router->post('/menus/update/{id}', 'MenusController@update');
 $router->delete('/menus/delete/{id}', 'MenusController@destroy');
 
 
+/*role*/
+$router->get('/role', 'RoleController@index');
+$router->get('/role/{id}', 'RoleController@show');
+$router->post('/role', 'RoleController@create');
+$router->put('/role/{id}', 'RoleController@update');
+$router->delete('/role/{id}', 'RoleController@destroy');
 
+
+// user 
+$router->get('/user', 'UserController@index');
+$router->get('/user/{id}', 'UserController@show');
+$router->put('/user/{id}', 'UserController@update');
+// $router->delete('/user/{id}', 'UserController@destroy');
+//
