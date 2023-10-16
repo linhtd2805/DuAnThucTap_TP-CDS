@@ -41,3 +41,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
     Route::post('/update-profile', 'Auth\\LoginController@updateProfile');   
 });
+
+
+$router->get('/menus', 'MenusController@index');
+$router->get('/menus/{id}', 'MenusController@show');
+$router->post('/menus/create', 'MenusController@store');
+$router->post('/menus/update/{id}', 'MenusController@update');
+$router->delete('/menus/delete/{id}', 'MenusController@destroy');
+
