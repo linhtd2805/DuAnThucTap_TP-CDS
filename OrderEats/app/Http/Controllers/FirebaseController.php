@@ -10,7 +10,7 @@ class FirebaseController extends Controller
 {
     public function sendNotification()
     {   
-        $token = 'cE3_2LWwQA2KbCM7N9HhvX:APA91bF-yAHHu7BibgXZMeosQVrvEg5d-bx4OWNyW5qBHhnRKXLfDfELqkgEAkdBcjcySiW30mVjXmC9ySdzvK1AZRVJ4zKSZNuHW87v16B3LINQf60l5Wmfmjd5_7lP4mftUBJqqnyP';
+        $token = 'AAAAv8d_Q0g:APA91bHwAswiq8GxEgvRqHK5N989MT12PcVHrlfnJDzib6zePmgC_ZillOxtg_v4lcvf2DrL9byIrmZT6lhu7pKK6ts2IyTP_fPoQatOmg1o80rGEx3vzLR1Y_cgYLfSCsjjQ7tFx7ZU';
         $notificationData = [
             'title' => 'Test Notification',
             'body' => 'This is a test notification from Lumen.',
