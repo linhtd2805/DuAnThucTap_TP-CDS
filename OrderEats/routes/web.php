@@ -64,3 +64,7 @@ $router->get('/user/{id}', 'UserController@show');
 $router->put('/user/{id}', 'UserController@update');
 // $router->delete('/user/{id}', 'UserController@destroy');
 //
+
+//index
+$router->get('/index', 'indexController@index');
+
