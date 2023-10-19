@@ -1,26 +1,27 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDlyzfqg3OeEXCGZY_M_9Rfy3GvOyW3Jfc",
-  authDomain: "fcmlumen.firebaseapp.com",
-  projectId: "fcmlumen",
-  storageBucket: "fcmlumen.appspot.com",
-  messagingSenderId: "126971343948",
-  appId: "1:126971343948:web:9ce4a9aa95922ef986b0e9",
-  measurementId: "G-T00S1ZST8M"
-};
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDxjjBJTK4afCNYAiUTAtOhGPr7IXIYRnA",
+    authDomain: "ordereatslumen.firebaseapp.com",
+    databaseURL: "https://ordereatslumen-default-rtdb.firebaseio.com",
+    projectId: "ordereatslumen",
+    storageBucket: "ordereatslumen.appspot.com",
+    messagingSenderId: "823685759816",
+    appId: "1:823685759816:web:1ecf2ac9d8f37d17d3697d",
+    measurementId: "G-XWZ1CMRNXZ"
+  };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 
-
-// SerderID 126971343948
-
-//AAAAHZAU9Ew:APA91bGTFGHmEYhPKjD08SnvNB7v3h36AA0qxDGRCuahVJNOFlXZR3SibZGbRGy565urzsoqOLyVxJiEpMw_FFcGVZ3fNTE8zNLalDKTyDqS4CG_RJvYO7CKCXMXZlhFT0D3iTX_LXJQ
+//FCM key here: AAAAv8d_Q0g:APA91bHwAswiq8GxEgvRqHK5N989MT12PcVHrlfnJDzib6zePmgC_ZillOxtg_v4lcvf2DrL9byIrmZT6lhu7pKK6ts2IyTP_fPoQatOmg1o80rGEx3vzLR1Y_cgYLfSCsjjQ7tFx7ZU
+//SenderID: 823685759816

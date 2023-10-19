@@ -25,6 +25,7 @@ class User extends Migration
             $table->double('longitude');
             $table->timestamps();
 
+            $table->$table->string('device_token');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
         });
     }
