@@ -8,6 +8,10 @@ use Auth;
 
 class FirebaseController extends Controller
 {
+    public function index(){
+        return view('home');    
+    }
+
     public function updateDeviceToken(Request $request)
     {
         Auth::user()->device_token =  $request->token;
@@ -60,5 +64,7 @@ class FirebaseController extends Controller
         // FCM response
         dd($result);
     }
+
+    
 }
 

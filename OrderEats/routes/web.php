@@ -34,13 +34,13 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login'); 
+    Route::get('/register1', 'Auth\\RegisterController@register1');
     Route::post('/register', 'Auth\\RegisterController@register');
     Route::post('/logout', 'Auth\\LoginController@logout');   
     Route::get('/me', 'Auth\\LoginController@userDetails');  
     Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
     Route::post('/update-profile', 'Auth\\LoginController@updateProfile');   
 });
-
 
 $router->get('/menus', 'MenusController@index');
 $router->get('/menus/{id}', 'MenusController@show');
@@ -49,7 +49,8 @@ $router->post('/menus/update/{id}', 'MenusController@update');
 $router->delete('/menus/delete/{id}', 'MenusController@destroy');
 
 Route::group(['middleware' => 'auth'],function () use ($router) {
+    // Route::get('index', 'FirebaseController@index');
     Route::post('/store-token', 'FirebaseController@updateDeviceToken');
     Route::post('/send-web-notification', 'FirebaseController@sendNotification');
 });
-
+Route::get('index', 'FirebaseController@index');
