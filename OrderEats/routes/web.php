@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\HTTP\Controllers\FirebaseController;
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -24,8 +25,6 @@ Route::post('/reviews', 'ReviewController@store');
 Route::put('/reviews/{id}', 'ReviewController@update');
 Route::delete('/reviews/{id}', 'ReviewController@destroy');
 
-Route::get('/firebase', 'FirebaseController@index');
-
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get('/protected', function () {
         return response()->json(['message' => 'Access to protected resources granted!']);
@@ -48,4 +47,9 @@ $router->get('/menus/{id}', 'MenusController@show');
 $router->post('/menus/create', 'MenusController@store');
 $router->post('/menus/update/{id}', 'MenusController@update');
 $router->delete('/menus/delete/{id}', 'MenusController@destroy');
+
+Route::group(['middleware' => 'auth'],function () use ($router) {
+    Route::post('/store-token', 'FirebaseController@updateDeviceToken');
+    Route::post('/send-web-notification', 'FirebaseController@sendNotification');
+});
 
