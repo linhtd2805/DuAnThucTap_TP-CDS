@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
   public function index(Request $request){
-    $user = User::all();
+    $user = User::paginate(2);
         
         return response()->json($user);
 }
@@ -27,7 +28,25 @@ public function update(Request $request, $id){
   
       //all it to the database
       $user = User::find($id);
-      
+      //bắt lỗi
+      if (!$user) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'username' => 'required|string|max:255',
+        'password' => 'required|string|min:6',
+        'fullname' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'required|string|max:20',
+        'role_id' => 'required|integer',
+        'latitude' => 'required|numeric',
+        'longitude' => 'required|numeric',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 400);
+    }
 
       $user->username = $request->input('username');
       $user->password = $request->input('password');
