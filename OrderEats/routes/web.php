@@ -67,6 +67,7 @@ $router->put('/user/{id}', 'UserController@update');
 //order
 $router->get('/orders', 'OrdersController@index');
 $router->get('/orders/{id}', 'OrdersController@show');
+$router->get('/orders1', 'OrdersController@tesst1');
 $router->post('/orders', 'OrdersController@create');
 $router->delete('/orders/{id}', 'OrdersController@delete');
 

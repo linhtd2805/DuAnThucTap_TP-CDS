@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Orders;
 use App\Models\Menus;
-use App\Models\User;    
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;  
+
 
 class OrdersController extends Controller
 {
@@ -36,10 +38,37 @@ class OrdersController extends Controller
         return response()->json($transformedOrders); // Trả về mảng chứa thông tin đã biến đổi
     }
     
+public function tesst1(){
+
+    $user = Auth::user();
+
+    $order = Orders::where('user_id', $user->id)->first();
+    if (!$order) {
+        return response()->json(['error' => 'Order not found'], 404);
+    }
+
+    // Biến đổi dữ liệu đơn hàng
+    $transformedOrder = [
+        'id' => $order->id,
+        'fullname' => $order->users->fullname,
+        'phone' => $order->users->phone,
+        'longitude' => $order->users->longitude,
+        'latitude' => $order->users->latitude,
+        'item_name' => $order->menus->item_name,
+        'description' => $order->menus->description,
+        'price' => $order->menus->price,
+        'quantity' => $order->quantity,
+        'total_price' => $order->total_price,
+        'order_status' => $order->order_status,
+    ];
+
+    return response()->json($transformedOrder);
+}
+
     public function show(Request $request, $id)
     {
         // Tìm đơn hàng dựa trên id
-        $order = Orders::with('users', 'menus')->find($id);
+        $order = auth()->$user->id->find($id);
     
         if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
@@ -66,7 +95,6 @@ class OrdersController extends Controller
     public function create(Request $request){
         // Validate the user input
         $this->validate($request, [
-                "user_id" => "required",
                 "shipper_id" => "required",
                 "menu_id" => "required", 
                 "quantity" => "required",
@@ -76,7 +104,8 @@ class OrdersController extends Controller
         $orders = new Orders();
 
         // Set the values from the request
-        $orders->user_id = $request->input('user_id');
+        $user = Auth::user();
+        $orders->user_id =  $user->id;
         $orders->shipper_id = $request->input('shipper_id');
         $orders->menu_id = $request->input('menu_id');
         $orders->quantity = $request->input('quantity');
