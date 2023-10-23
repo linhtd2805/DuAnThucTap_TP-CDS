@@ -95,9 +95,9 @@ public function tesst1(){
     public function create(Request $request){
         // Validate the user input
         $this->validate($request, [
-                "shipper_id" => "required",
-                "menu_id" => "required", 
-                "quantity" => "required",
+            "shipper_id" => "required",
+            "menu_id" => "required", 
+            "quantity" => "required",
         ]);
 
         // Create a new Orders instance

@@ -36,6 +36,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login'); 
     Route::post('/register', 'Auth\\RegisterController@register');
+    Route::post('/registershipper', 'Auth\\RegisterShipperController@register');
     Route::post('/logout', 'Auth\\LoginController@logout');   
     Route::get('/me', 'Auth\\LoginController@userDetails');  
     Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
