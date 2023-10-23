@@ -68,4 +68,9 @@ $router->put('/user/{id}', 'UserController@update');
 $router->get('/orders', 'OrdersController@index');
 $router->get('/orders/{id}', 'OrdersController@show');
 $router->post('/orders', 'OrdersController@create');
-$router->delete('/orders/{id}', 'OrdersController@destroy');
+$router->delete('/orders/{id}', 'OrdersController@delete');
+
+//shipper
+$router->get('/shipper', 'ShipperCheckOrderController@index');
+$router->get('/shipper/{id}', 'ShipperCheckOrderController@show');
+$router->put('/shipper/{id}','ShipperCheckOrderController@update');

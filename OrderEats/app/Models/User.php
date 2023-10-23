@@ -31,6 +31,10 @@ class User extends Model implements JWTSubject, AuthenticatableContract, Authori
         'password',
     ];
 
+    public function roles(){
+        return $this->belongsTo(Roles::class, 'role_id');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

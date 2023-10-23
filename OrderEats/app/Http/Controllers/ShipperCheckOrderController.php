@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Orders;
 use App\Models\Menus;
-use App\Models\User;    
+use App\Models\User;  
 
-class OrdersController extends Controller
+class ShipperCheckOrderController extends Controller
 {
     public function index()
     {
         $orders = Orders::with('users', 'menus')->get();
- 
-        $transformedOrders = $orders->map(function ($order) {
+
+        $filteredOrders = $orders->filter(function ($order) {
+            return $order->order_status === 'Đang xử lý' || $order->order_status === 'Đã giao';
+        });
+
+        $transformedOrders = $filteredOrders->map(function ($order) {
             $menu = $order->menus; // Lấy menu liên quan đến đơn hàng
             // $totalPrice = $menu->price * $order->quantity; // Tính tổng giá trị đơn hàng
             
@@ -35,7 +39,7 @@ class OrdersController extends Controller
         
         return response()->json($transformedOrders); // Trả về mảng chứa thông tin đã biến đổi
     }
-    
+
     public function show(Request $request, $id)
     {
         // Tìm đơn hàng dựa trên id
@@ -44,7 +48,7 @@ class OrdersController extends Controller
         if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
-    
+       
         // Biến đổi dữ liệu đơn hàng
         $transformedOrder = [
             'id' => $order->id,
@@ -62,74 +66,37 @@ class OrdersController extends Controller
     
         return response()->json($transformedOrder);
     }
-    
-    public function create(Request $request){
-        // Validate the user input
-        $this->validate($request, [
-                "user_id" => "required",
-                "shipper_id" => "required",
-                "menu_id" => "required", 
-                "quantity" => "required",
-        ]);
 
-        // Create a new Orders instance
-        $orders = new Orders();
-
-        // Set the values from the request
-        $orders->user_id = $request->input('user_id');
-        $orders->shipper_id = $request->input('shipper_id');
-        $orders->menu_id = $request->input('menu_id');
-        $orders->quantity = $request->input('quantity');
-
-        // tham chiếu giá của bảng menus từ menu_id khóa ngoại của bảng orders
-        $menu = Menus::find($orders->menu_id);
-
-        if (!$menu) {
-            return response()->json(['error' => 'Menu not found'], 404);
-        }
-            
-        //tính tổng dựa vào giá của bảng menus và số lượng của order
-        $total_price = $menu->price * $orders->quantity;
-        $orders->total_price = $total_price;
-
-        //$orders->total_price = $menu->price * $orders->quantity;
-
-        // đặt giá trị mặt định cho order_status
-        $orders->order_status = $request->input('order_status', 'đang xử lý');
-
-        // Save the data to the database
-        $orders->save();
-
-        return response()->json($orders);
-        
-    }
-
-    // public function destroy($id)
-    // {
-    //     $orders = Orders::find($id);
-    //     $orders ->delete();
-    //     return response()->json($orders);
-    // }
-    public function delete(Request $request, $id) {
+    public function update(Request $request, $id){
         // Tìm đối tượng Orders dựa trên $id
         $orders = Orders::find($id);
     
         if (!$orders) {
             return response()->json(['error' => 'Order not found'], 404);
         }
-    
-        // Kiểm tra xem trạng thái order_status đã được đặt thành 'hủy bỏ' hay chưa
-        if ($orders->order_status === 'hủy bỏ') {
-            return response()->json(['error' => 'This order has already been canceled.'], 400);
+        
+        // Kiểm tra xem request có chứa các trường không được phép sửa không
+        $nonEditableFields = ['fullname', 'phone', 'longitude', 'latitude',
+                                'item_name','description','price','quantity','total_price'];
+
+        foreach ($nonEditableFields as $field) {
+            if ($request->has($field)) {
+                return response()->json(['error' => "Bạn không có quyền sửa '$field' này.",
+                'message' => "Bạn chỉ được phép xác nhận đơn hàng"], 403);
+            }
         }
-    
-        // Thay đổi trạng thái 'order_status' thành 'hủy bỏ'
-        $orders->order_status = 'hủy bỏ';
+
+        // Kiểm tra và cập nhật trường 'order_status' nếu nó được cung cấp trong request
+        if ($request->has('order_status') && $request->input('order_status') === 'Đang xử lý') {
+            $orders->order_status = $request->input('order_status');
+        }else       
+            return response()->json(['error' => 'Bạn không có quyền cập nhật trạng thái đơn hàng Đang giao.'], 403);
     
         // Lưu thay đổi vào cơ sở dữ liệu
         $orders->save();
     
-        return response()->json(['message' => 'Order has been canceled successfully']);
-    }
-
+        return response()->json($orders);
+    }   
+ 
 }
+
