@@ -57,14 +57,14 @@ $router->post('/role', 'RoleController@create');
 $router->put('/role/{id}', 'RoleController@update');
 $router->delete('/role/{id}', 'RoleController@destroy');
 
-
 // user 
-$router->get('/user', 'UserController@index');
-$router->get('/user/{id}', 'UserController@show');
-$router->put('/user/{id}', 'UserController@update');
+Route::group(['middleware' => 'auth'],function () use ($router) { 
+    $router->get('/user', 'UserController@index');
+    $router->get('/user/{id}', 'UserController@show');
+    $router->put('/user/{id}', 'UserController@update');
 // $router->delete('/user/{id}', 'UserController@destroy');
 //
-
+});
 //index
 $router->get('/index', 'indexController@index');
 
