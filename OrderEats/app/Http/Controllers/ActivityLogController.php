@@ -12,7 +12,7 @@ class ActivityLogController extends Controller
     public function buy(Request $request)
     {
         // Đọc thông tin sản phẩm và số lượng từ request
-        $menu_id = $request->get('menu_id');
+        $menu_id = $request->input('menu_id');
         // $quantity = $request->input('quantity');
 
         // Kiểm tra sự tồn tại của sản phẩm và số lượng trong kho hàng
