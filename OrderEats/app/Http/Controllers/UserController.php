@@ -69,7 +69,20 @@ class UserController extends Controller
 
     return response()->json($user);
   }
+  // Tìm kiếm theo data
+  public function search($keyword) {
+        
+    $results = User::where('id', 'like', '%' . $keyword . '%')
+    ->orWhere('username', 'like', '%' . $keyword . '%')
+    ->orWhere('fullname', 'like', '%' . $keyword . '%')
+    ->orWhere('email', 'like', '%' . $keyword . '%')
+    ->orWhere('phone', 'like', '%' . $keyword . '%')
+   
+    
+    ->get();
 
+    return response()->json($results);
+}
 
 
 }

@@ -71,6 +71,8 @@ Route::group(['middleware' => 'auth'],function () use ($router) {
     $router->get('/user', 'UserController@index');
     $router->get('/user/{id}', 'UserController@show');
     $router->put('/user/{id}', 'UserController@update');
+    $router->get('/user/search/{keyword}', 'UserController@search');
+  
 // $router->delete('/user/{id}', 'UserController@destroy');
 //
 });
