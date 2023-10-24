@@ -14,7 +14,7 @@ class ReviewController extends Controller
     public function index()
     {
         $reviews = Reviews::with('orders', 'user')->get();
-        // $orders = Orders::all();
+        $orders = Orders::all();
         // return view('reviews', compact('reviews', 'orders'));
         return response()->json($reviews);
     }
