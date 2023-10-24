@@ -98,21 +98,10 @@ class ReviewController extends Controller
         }
     }
 
-    //Phân trang
-    public function wpage()
-    {
-        $reviews = Reviews::with('orders', 'user')->get();
-        $orders = Orders::all();
-
-        $data  = DB::table('reviews')->paginate(8);
-        return response()->json(['reviews' => $data]);
-    }
-
     // Tìm kiếm theo data
     public function search($keyword) {
         
-        $results = DB::table('reviews')
-        ->where('id', 'like', '%' . $keyword . '%')
+        $results = Reviews::where('id', 'like', '%' . $keyword . '%')
         ->orWhere('order_id', 'like', '%' . $keyword . '%')
         ->orWhere('rating', 'like', '%' . $keyword . '%')
         ->orWhere('comment', 'like', '%' . $keyword . '%')
