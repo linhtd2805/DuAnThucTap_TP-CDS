@@ -23,8 +23,10 @@ Route::get('/reviews/{id}' , 'ReviewController@show');
 Route::post('/reviews', 'ReviewController@store');
 Route::put('/reviews/{id}', 'ReviewController@update');
 Route::delete('/reviews/{id}', 'ReviewController@destroy');
-
-Route::get('/firebase', 'FirebaseController@sendFcmMessage');
+// Route::get('/reviews/wpage' , 'ReviewController@wpage');
+Route::get('/reviews/search/{keyword}' , 'ReviewController@search');
+Route::put('/reviews/softDelete/{id}', 'ReviewController@softDelete');
+Route::put('/reviews/reverse/{id}', 'ReviewController@reverse');
 
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get('/protected', function () {
@@ -35,11 +37,12 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login'); 
+    Route::get('/register', 'Auth\\RegisterController@getRegister');
     Route::post('/register', 'Auth\\RegisterController@register');
     Route::post('/logout', 'Auth\\LoginController@logout');   
     Route::get('/me', 'Auth\\LoginController@userDetails');  
     Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
-    Route::post('/update-profile', 'Auth\\LoginController@updateProfile');   
+    Route::post('/update-profile', 'Auth\\LoginController@updateProfile'); 
 });
 
 //menus
@@ -48,6 +51,13 @@ $router->get('/menus/{id}', 'MenusController@show');
 $router->post('/menus/create', 'MenusController@store');
 $router->post('/menus/update/{id}', 'MenusController@update');
 $router->delete('/menus/delete/{id}', 'MenusController@destroy');
+
+Route::group(['middleware' => 'auth'],function () use ($router) {
+    Route::post('/store-token', 'FirebaseController@updateDeviceToken');
+});
+
+// Trong route
+Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification');
 
 
 /*role*/

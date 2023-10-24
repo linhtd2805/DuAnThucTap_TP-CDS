@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\JWTAuth;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\ServiceAccount;
 
 class RegisterController extends Controller
 {
@@ -17,9 +19,9 @@ class RegisterController extends Controller
         $this->jwt = $jwt;
     }
 
-    public function log(){
-        return response()->json("Done");
-    }
+    public function getRegister(){
+        return view('register');
+    } 
 
     public function register(Request $request)
     {
@@ -47,7 +49,16 @@ class RegisterController extends Controller
             $user->latitude=0;
             $user->longitude=0;
 
-            $user->save();
+            // Lấy FCM token từ yêu cầu đăng ký
+            $fcmToken = $request->get('fcm_token');
+            $user->device_token = $fcmToken;
+
+            try{
+
+                $user->save();
+            }catch(Exception $e){
+                return response()->json($e);
+            }
 
             $token = auth()->tokenById($user->id);
 
@@ -58,7 +69,6 @@ class RegisterController extends Controller
                 'token_type' => 'bearer',
                 'user' => $user,
                 'expires_in' => auth()->factory()->getTTL() * 60
-
             ]);
         } catch (\Exception $e) {
             //return error message

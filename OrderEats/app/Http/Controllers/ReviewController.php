@@ -16,7 +16,7 @@ class ReviewController extends Controller
         $reviews = Reviews::with('orders', 'user')->get();
         $orders = Orders::all();
         // return view('reviews', compact('reviews', 'orders'));
-        return response()->json($reviews, $orders);
+        return response()->json($reviews);
     }
 
     // Hiển thị theo id
@@ -94,12 +94,70 @@ class ReviewController extends Controller
         }
     }
 
+    //Phân trang
+    public function wpage()
+    {
+        $reviews = Reviews::with('orders', 'user')->get();
+        $orders = Orders::all();
+
+        $data  = DB::table('reviews')->paginate(8);
+        return response()->json(['reviews' => $data]);
+    }
+
+    // Tìm kiếm theo data
+    public function search($keyword) {
+        
+        $results = DB::table('reviews')
+        ->where('id', 'like', '%' . $keyword . '%')
+        ->orWhere('order_id', 'like', '%' . $keyword . '%')
+        ->orWhere('rating', 'like', '%' . $keyword . '%')
+        ->orWhere('comment', 'like', '%' . $keyword . '%')
+        //->orWhere('date', 'like', '%' . $keyword . '%')
+        ->get();
+
+        return response()->json($results);
+    }
+
+    //Delete mềm
+    public function softDelete($id) {
+        $post = Reviews::find($id);
+
+        if (!$post) {
+            return response()->json([
+                'message' => 'Không tìm được data !',
+            ], 404);
+        }
+
+        $post->delete();
+
+        return response()->json([
+            'message' => 'Deleted successfully !',
+        ], 200);
+    }
+
+    //Hoàn tac' delete mềm //withTrashed()
+    public function reverse($id) {
+        $post = Reviews::withTrashed()->where('id', $id)->first();
+        
+        if (!$post) {
+            return response()->json([
+                'message' => 'Không tìm được data !',
+            ], 404);
+        }
+
+        $post->restore();
+
+        return response()->json([
+            'message' => 'Reverse successfully !',
+        ], 200);
+    }
+
     public function doValidate($request) {
         $data = [
-            "rating" => "required|numeric",
+            "rating" => "required|numeric|max:11",
             "comment" => "required",
-            "order_id" => "required",
-            // "date" => "required|date_format:Y-m-d",
+            "order_id" => "required|string|max:20",
+            "date" => "required|date_format:Y-m-d",
         ];
 
         $validator = Validator::make($request->all(), $data);
