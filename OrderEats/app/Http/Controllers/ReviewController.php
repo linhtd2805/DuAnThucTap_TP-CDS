@@ -14,9 +14,9 @@ class ReviewController extends Controller
     public function index()
     {
         $reviews = Reviews::with('orders', 'user')->get();
-        $orders = Orders::all();
+        // $orders = Orders::all();
         // return view('reviews', compact('reviews', 'orders'));
-        return response()->json($reviews, $orders);
+        return response()->json($reviews);
     }
 
     // Hiển thị theo id
@@ -157,7 +157,7 @@ class ReviewController extends Controller
             "rating" => "required|numeric|max:11",
             "comment" => "required",
             "order_id" => "required|string|max:20",
-            // "date" => "required|date_format:Y-m-d",
+            "date" => "required|date_format:Y-m-d",
         ];
 
         $validator = Validator::make($request->all(), $data);
