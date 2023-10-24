@@ -90,4 +90,6 @@ $router->put('/shipper/{id}','ShipperCheckOrderController@update');
 //index
 $router->get('/index', 'indexController@index');
 //khoảng cách
+$router->group(['prefix' => 'api'], function () use ($router) {
 Route::post('/calculate-distance', [ApiController::class, 'calculateDistance']);
+});
