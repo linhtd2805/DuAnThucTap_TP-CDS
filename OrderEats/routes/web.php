@@ -23,6 +23,10 @@ Route::get('/reviews/{id}' , 'ReviewController@show');
 Route::post('/reviews', 'ReviewController@store');
 Route::put('/reviews/{id}', 'ReviewController@update');
 Route::delete('/reviews/{id}', 'ReviewController@destroy');
+// Route::get('/reviews/wpage' , 'ReviewController@wpage');
+Route::get('/reviews/search/{keyword}' , 'ReviewController@search');
+Route::put('/reviews/softDelete/{id}', 'ReviewController@softDelete');
+Route::put('/reviews/reverse/{id}', 'ReviewController@reverse');
 
 Route::get('/firebase', 'FirebaseController@sendFcmMessage');
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reviews extends Model
 {
@@ -17,4 +18,6 @@ class Reviews extends Model
     { 
         return $this->belongsTo(User::class, 'user_id'); 
     }
+
+    use SoftDeletes;
 }
