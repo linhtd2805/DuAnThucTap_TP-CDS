@@ -86,7 +86,7 @@ class ReviewController extends Controller
     public function destroy($id)
     {
         try {
-            $reviews = Reviews::where('review_id', $id)->first();
+            $reviews = Reviews::find($id);
             if (!$reviews) {
                 return response()->json(['message' => 'Không tìm thấy '], 404);
             }else{
