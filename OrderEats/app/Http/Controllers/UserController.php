@@ -41,7 +41,7 @@ class UserController extends Controller
       'password' => 'required|string|min:6',
       'fullname' => 'required|string|max:255',
       'email' => 'required|email|max:255',
-      'phone' => 'required|string|max:20',
+      'phone' => 'required|string|max:10',
       'role_id' => 'required|integer',
       'latitude' => 'required|numeric',
       'longitude' => 'required|numeric',
