@@ -7,10 +7,10 @@ class ApiController extends Controller
 {
     public function calculateDistance(Request $request)
     {
-        $lat1 = $request->input('40.7128');
-        $lon1 = $request->input('-74.0060');
-        $lat2 = $request->input('34.0522');
-        $lon2 = $request->input('-118.2437');
+        $lat1 = $request->input('lat1');
+        $lon1 = $request->input('lon1');
+        $lat2 = $request->input('lat2');
+        $lon2 = $request->input('lon2');
 
         $distance = $this->calcDistance($lat1, $lon1, $lat2, $lon2);
 

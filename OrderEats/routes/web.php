@@ -76,5 +76,5 @@ Route::group(['middleware' => 'auth'],function () use ($router) {
 //
 });
 //index
-$router->get('/index', 'indexController@index');
+$router->get('/calculateDistance', 'ApiController@calculateDistance');
 
