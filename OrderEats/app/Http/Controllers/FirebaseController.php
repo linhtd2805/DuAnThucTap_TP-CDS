@@ -20,7 +20,7 @@ class FirebaseController extends Controller
     public function sendNotification(Request $request, $id) {
         $url = 'https://fcm.googleapis.com/fcm/send';
 
-        // Lấy danh sách device_token của người dùng dựa trên user_id
+        // Lấy device_token của người dùng dựa trên user_id
         $user = User::find($id);
 
         $deviceTokens = [$user->device_token];

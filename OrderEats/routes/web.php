@@ -56,7 +56,7 @@ Route::group(['middleware' => 'auth'],function () use ($router) {
     Route::post('/reviews', 'ReviewController@store');
 });
 
-// Trong route
+// gửi thông báo
 Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification');
 
 /*role*/
