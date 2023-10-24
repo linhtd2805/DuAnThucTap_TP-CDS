@@ -18,7 +18,8 @@ class CreateReviewsTable extends Migration
             $table->integer('rating'); $table->text('comment'); 
             $table->date('date'); 
             $table->foreign('order_id')->references('id')->on('orders'); 
-            $table->timestamps(); 
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
