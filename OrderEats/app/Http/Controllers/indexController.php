@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 
+        
+use GuzzleHttp\Client;
+
 use Illuminate\Http\Request;
 use App\Models\User;
 
@@ -70,28 +73,52 @@ class indexController extends Controller
 
 
         // tính distance
-        function haversine($lat1, $lon1, $lat2, $lon2) {
-            $earthRadius = 6371; // Bán kính trái đất trong đơn vị kilômét
+        // function haversine($lat1, $lon1, $lat2, $lon2) {
+        //     $earthRadius = 6371; // Bán kính trái đất trong đơn vị kilômét
+
+        //     $dLat = deg2rad($lat2 - $lat1);
+        //     $dLon = deg2rad($lon2 - $lon1);
+
+        //     $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
+        //     $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        //     $distance = $earthRadius * $c; // Khoảng cách theo đơn vị kilômét
+
+        //     return $distance;
+        // }
+
+        // $shipperLatitude = 10.019299;    //10.019299,105.7697339
+        // $shipperLongitude = 105.7697339;
+        // $customerLatitude = 10.0190568;  //10.0190568,105.7472808
+        // $customerLongitude = 105.7472808;
+
+        // $distance = haversine($shipperLatitude, $shipperLongitude, $customerLatitude, $customerLongitude);
+        // echo "Khoảng cách giữa shipper và customer là: " . round($distance, 2) . " km";
+      
+        require 'vendor/autoload.php'; // Đường dẫn đến tệp autoload.php của Composer
+
+
         
-            $dLat = deg2rad($lat2 - $lat1);
-            $dLon = deg2rad($lon2 - $lon1);
+        $address = urlencode("1600 Amphitheatre Parkway, Mountain View, CA");
         
-            $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
-            $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $client = new Client();
+        $response = $client->request('GET', "https://nominatim.openstreetmap.org/search?format=json&q={$address}");
+        $data = json_decode($response->getBody(), true);
         
-            $distance = $earthRadius * $c; // Khoảng cách theo đơn vị kilômét
+        if (!empty($data) && isset($data[0])) {
+            $latitude = $data[0]['lat'];
+            $longitude = $data[0]['lon'];
         
-            return $distance;
+            echo "Latitude: {$latitude}<br>";
+            echo "Longitude: {$longitude}";
+        } else {
+            echo "Không tìm thấy địa chỉ hoặc có lỗi khác.";
         }
+     
         
-        $shipperLatitude = 10.019299;    //10.019299,105.7697339
-        $shipperLongitude = 105.7697339;
-        $customerLatitude = 10.0190568;  //10.0190568,105.7472808
-        $customerLongitude = 105.7472808;
         
-        $distance = haversine($shipperLatitude, $shipperLongitude, $customerLatitude, $customerLongitude);
-        echo "Khoảng cách giữa shipper và customer là: " . round($distance, 2) . " km";
         
+
 
         return view('index');
     }
