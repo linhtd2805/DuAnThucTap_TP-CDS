@@ -21,7 +21,8 @@ class CreateReviewsTable extends Migration
             $table->date('date'); 
             
             $table->foreign('order_id')->references('id')->on('orders'); 
-            $table->timestamps(); 
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
