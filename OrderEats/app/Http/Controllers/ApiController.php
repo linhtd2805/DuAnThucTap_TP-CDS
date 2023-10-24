@@ -7,14 +7,26 @@ class ApiController extends Controller
 {
     public function calculateDistance(Request $request)
     {
-        $lat1 = $request->input('lat1');
-        $lon1 = $request->input('lon1');
-        $lat2 = $request->input('lat2');
-        $lon2 = $request->input('lon2');
-
+        //trường hợp trên 1km
+        //  $lat1 = $request->input('lat1'); //10.019299, 105.7697339, 10.0190568, 105.7472808
+        // $lon1 = $request->input('lon1');
+        // $lat2 = $request->input('lat2');
+        // $lon2 = $request->input('lon2');
+        
+        //trường hợp dưới 1km chuyển về mét
+        $lat1 = 10.019299;
+        $lon1 = 105.7697339;
+        $lat2 = 10.019305;
+        $lon2 = 105.7697338;
         $distance = $this->calcDistance($lat1, $lon1, $lat2, $lon2);
 
-        return response()->json(['distance' => round($distance, 2) . ' km']);
+        if ($distance < 1) {
+            // Chuyển đổi khoảng cách thành mét nếu dưới 1 km
+            $distanceInMeters = $distance * 1000;
+            return response()->json(['distance' => round($distanceInMeters) . ' m']);
+        } else {
+            return response()->json(['distance' => round($distance, 2) . ' km']);
+        }
     }
 
     private function calcDistance($lat1, $lon1, $lat2, $lon2)
@@ -31,4 +43,5 @@ class ApiController extends Controller
 
         return $distance;
     }
+
 }
