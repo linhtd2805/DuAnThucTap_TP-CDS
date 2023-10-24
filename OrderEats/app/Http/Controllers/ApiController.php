@@ -23,9 +23,9 @@ class ApiController extends Controller
         if ($distance < 1) {
             // Chuyển đổi khoảng cách thành mét nếu dưới 1 km
             $distanceInMeters = $distance * 1000;
-            return response()->json(['distance' => round($distanceInMeters) . ' m']);
+            return response()->json(['khoảng cách: ' => round($distanceInMeters) . ' m']);
         } else {
-            return response()->json(['distance' => round($distance, 2) . ' km']);
+            return response()->json(['khoảng cách: ' => round($distance, 2) . ' km']);
         }
     }
 
