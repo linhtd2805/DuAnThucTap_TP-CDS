@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController;
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -77,4 +78,7 @@ Route::group(['middleware' => 'auth'],function () use ($router) {
 });
 //index
 $router->get('/index', 'indexController@index');
+
+Route::post('/calculate-distance', [ApiController::class, 'calculateDistance']);
+
 
