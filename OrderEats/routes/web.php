@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\HTTP\Controllers\FirebaseController;
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -49,8 +48,9 @@ $router->post('/menus/update/{id}', 'MenusController@update');
 $router->delete('/menus/delete/{id}', 'MenusController@destroy');
 
 Route::group(['middleware' => 'auth'],function () use ($router) {
-    // Route::get('index', 'FirebaseController@index');
     Route::post('/store-token', 'FirebaseController@updateDeviceToken');
-    Route::post('/send-web-notification', 'FirebaseController@sendNotification');
 });
-Route::get('index', 'FirebaseController@index');
+
+// Trong route
+Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification');
+
