@@ -30,7 +30,7 @@ public function update(Request $request, $id){
       $user = User::find($id);
       //bắt lỗi
       if (!$user) {
-        return response()->json(['error' => 'User not found'], 404);
+        return response()->json(['error' => 'Không tìm thấy'], 404);
     }
 
     $validator = Validator::make($request->all(), [

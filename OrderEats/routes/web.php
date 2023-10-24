@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController;
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -86,3 +87,7 @@ $router->delete('/orders/{id}', 'OrdersController@delete');
 $router->get('/shipper', 'ShipperCheckOrderController@index');
 $router->get('/shipper/{id}', 'ShipperCheckOrderController@show');
 $router->put('/shipper/{id}','ShipperCheckOrderController@update');
+//index
+$router->get('/index', 'indexController@index');
+//khoảng cách
+Route::post('/calculate-distance', [ApiController::class, 'calculateDistance']);
