@@ -83,7 +83,7 @@ class LoginController extends Controller
     function checkLogin()
     {
         if (Auth::user()) {
-            return response()->json(['success' => 1]);
+            return response()->json(['success' => 1, 'message'=>"Đang đăng nhập với tài khoản:", 'data'=>Auth::user()]);
         }
 
         return response()->json(['success' => 0]);

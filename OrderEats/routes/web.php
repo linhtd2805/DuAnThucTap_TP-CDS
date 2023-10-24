@@ -33,12 +33,12 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login'); 
-    Route::get('/register1', 'Auth\\RegisterController@register1');
+    Route::get('/register', 'Auth\\RegisterController@getRegister');
     Route::post('/register', 'Auth\\RegisterController@register');
     Route::post('/logout', 'Auth\\LoginController@logout');   
     Route::get('/me', 'Auth\\LoginController@userDetails');  
     Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
-    Route::post('/update-profile', 'Auth\\LoginController@updateProfile');   
+    Route::post('/update-profile', 'Auth\\LoginController@updateProfile'); 
 });
 
 //menus

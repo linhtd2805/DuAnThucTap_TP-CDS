@@ -19,7 +19,7 @@ class RegisterController extends Controller
         $this->jwt = $jwt;
     }
 
-    public function register1(){
+    public function getRegister(){
         return view('register');
     } 
 
