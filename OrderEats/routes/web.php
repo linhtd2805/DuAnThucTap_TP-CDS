@@ -39,6 +39,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login'); 
     Route::get('/register', 'Auth\\RegisterController@getRegister');
     Route::post('/register', 'Auth\\RegisterController@register');
+    Route::post('/registershipper', 'Auth\\RegisterShipperController@register');
     Route::post('/logout', 'Auth\\LoginController@logout');   
     Route::get('/me', 'Auth\\LoginController@userDetails');  
     Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
@@ -73,4 +74,15 @@ $router->get('/user', 'UserController@index');
 $router->get('/user/{id}', 'UserController@show');
 $router->put('/user/{id}', 'UserController@update');
 // $router->delete('/user/{id}', 'UserController@destroy');
-//
+
+//order
+$router->get('/orders', 'OrdersController@index');
+$router->get('/orders/{id}', 'OrdersController@show');
+$router->get('/orders1', 'OrdersController@tesst1');
+$router->post('/orders', 'OrdersController@create');
+$router->delete('/orders/{id}', 'OrdersController@delete');
+
+//shipper
+$router->get('/shipper', 'ShipperCheckOrderController@index');
+$router->get('/shipper/{id}', 'ShipperCheckOrderController@show');
+$router->put('/shipper/{id}','ShipperCheckOrderController@update');
