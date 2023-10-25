@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reviews extends Model
 {
-    // public $timestamps = false; 
     protected $fillable = [ 'order_id', 'rating', 'comment', 'date', ]; 
     public function orders() 
     { 

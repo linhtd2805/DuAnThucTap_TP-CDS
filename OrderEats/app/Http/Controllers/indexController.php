@@ -56,7 +56,7 @@ class indexController extends Controller
         //     return $distance;
         // }
 
-        // // Địa chỉ của shipper và khách hàng
+        // Địa chỉ của shipper và khách hàng
         // $shipperAddress = "Địa chỉ shipper"; // Thay thế bằng địa chỉ thực của shipper
         // $customerAddress = "Địa chỉ khách hàng"; // Thay thế bằng địa chỉ thực của khách hàng
         // $apiKey = "AIzaSyCF7a0qKEjxo8wtDTHV_h8hG1VIJiMNDx0"; // Thay thế bằng API key của bạn
@@ -72,48 +72,28 @@ class indexController extends Controller
 
 
 
-        // tính distance
-        // function haversine($lat1, $lon1, $lat2, $lon2) {
-        //     $earthRadius = 6371; // Bán kính trái đất trong đơn vị kilômét
+       // tính distance
+        function haversine($lat1, $lon1, $lat2, $lon2) {
+            $earthRadius = 6371; // Bán kính trái đất trong đơn vị kilômét
 
-        //     $dLat = deg2rad($lat2 - $lat1);
-        //     $dLon = deg2rad($lon2 - $lon1);
+            $dLat = deg2rad($lat2 - $lat1);
+            $dLon = deg2rad($lon2 - $lon1);
 
-        //     $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
-        //     $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+            $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
+            $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
-        //     $distance = $earthRadius * $c; // Khoảng cách theo đơn vị kilômét
+            $distance = $earthRadius * $c; // Khoảng cách theo đơn vị kilômét
 
-        //     return $distance;
-        // }
-
-        // $shipperLatitude = 10.019299;    //10.019299,105.7697339
-        // $shipperLongitude = 105.7697339;
-        // $customerLatitude = 10.0190568;  //10.0190568,105.7472808
-        // $customerLongitude = 105.7472808;
-
-        // $distance = haversine($shipperLatitude, $shipperLongitude, $customerLatitude, $customerLongitude);
-        // echo "Khoảng cách giữa shipper và customer là: " . round($distance, 2) . " km";
-      
-        require 'vendor/autoload.php'; // Đường dẫn đến tệp autoload.php của Composer
-
-
-        
-        $address = urlencode("1600 Amphitheatre Parkway, Mountain View, CA");
-        
-        $client = new Client();
-        $response = $client->request('GET', "https://nominatim.openstreetmap.org/search?format=json&q={$address}");
-        $data = json_decode($response->getBody(), true);
-        
-        if (!empty($data) && isset($data[0])) {
-            $latitude = $data[0]['lat'];
-            $longitude = $data[0]['lon'];
-        
-            echo "Latitude: {$latitude}<br>";
-            echo "Longitude: {$longitude}";
-        } else {
-            echo "Không tìm thấy địa chỉ hoặc có lỗi khác.";
+            return $distance;
         }
+
+        $shipperLatitude = 10.019299;    //10.019299,105.7697339
+        $shipperLongitude = 105.7697339;
+        $customerLatitude = 10.0190568;  //10.0190568,105.7472808
+        $customerLongitude = 105.7472808;
+
+        $distance = haversine($shipperLatitude, $shipperLongitude, $customerLatitude, $customerLongitude);
+        echo "Khoảng cách giữa shipper và customer là: " . round($distance, 2) . " km";       
      
         
         

@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController;
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -20,7 +21,6 @@ $router->get('/', function () use ($router) {
 $router->get('/testDB', 'Controller@checkConnection');
 Route::get('/reviews' , 'ReviewController@index');
 Route::get('/reviews/{id}' , 'ReviewController@show');
-Route::post('/reviews', 'ReviewController@store');
 Route::put('/reviews/{id}', 'ReviewController@update');
 Route::delete('/reviews/{id}', 'ReviewController@destroy');
 Route::get('/reviews/search/{keyword}' , 'ReviewController@search');
@@ -53,11 +53,11 @@ $router->delete('/menus/delete/{id}', 'MenusController@destroy');
 
 Route::group(['middleware' => 'auth'],function () use ($router) {
     Route::post('/store-token', 'FirebaseController@updateDeviceToken');
+    Route::post('/reviews', 'ReviewController@store');
 });
 
-// Trong route
+// gửi thông báo
 Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification');
-
 
 /*role*/
 $router->get('/role', 'RoleController@index');
@@ -78,4 +78,7 @@ Route::group(['middleware' => 'auth'],function () use ($router) {
 });
 //index
 $router->get('/calculateDistance', 'ApiController@calculateDistance');
+
+Route::post('/calculate-distance', [ApiController::class, 'calculateDistance']);
+
 

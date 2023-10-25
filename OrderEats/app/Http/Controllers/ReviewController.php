@@ -13,21 +13,18 @@ class ReviewController extends Controller
     //All Data
     public function index()
     {
-        $reviews = Reviews::with('orders', 'user')->get();
-        $orders = Orders::all();
-        // return view('reviews', compact('reviews', 'orders'));
+        $reviews = Reviews::with('orders')->get();
         return response()->json($reviews);
     }
 
     // Hiển thị theo id
     public function show($id)
     {
-        $reviews = Reviews::where('id', $id)->first();
+        $reviews = Reviews::with('orders')->find($id);    
         if (!$reviews) {
-            return response()->json(['message' => 'Không tìm thấy'], 404);
+            return response()->json(['message' => 'Không tìm thấy đánh giá, nhập lại id'], 404);
         }
-        // return response()->json($reviews);
-        return view('reviews1', compact('reviews'));
+        return response()->json($reviews);
     }
 
     // Thêm 
@@ -39,17 +36,25 @@ class ReviewController extends Controller
                 return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
             }
 
-            $reviews = new Reviews();
-            $reviews-> order_id = $request->get("order_id");
-            $reviews-> rating = $request->get('rating');
-            $reviews-> comment = $request->get('comment');
-            $reviews-> date = date('Y-m-d', time());
+            $user = auth()->user();
+            $deliveredOrders = Orders::where('user_id', $user->id)
+                ->where('order_status', 'Đã giao')
+                ->pluck('id');
 
-            $reviews->save();
-            return response()->json(['message' => 'Thêm Đánh giá thành công !']); 
+            if ($deliveredOrders->contains($request->get("order_id"))) {
+                $reviews = new Reviews();
+                $reviews->order_id = $request->get("order_id");
+                $reviews->rating = $request->get('rating');
+                $reviews->comment = $request->get('comment');
+                $reviews->date = date('Y-m-d', time());
 
+                $reviews->save();
+                return response()->json(['message' => 'Thêm Đánh giá thành công !', 'Đánh Giá:' => $reviews]);
+            } else {
+                return response()->json(['message' => 'Đơn hàng không hợp lệ hoặc chưa được giao, không thể thêm đánh giá!'], 400);
+            }
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Thêm Đánh giá thất bại !'], 409); 
+            return response()->json(['message' => 'Thêm Đánh giá thất bại !'], 400); 
         }    
     }
 
@@ -58,18 +63,17 @@ class ReviewController extends Controller
     {   
         try {
             // Xác thực inputs
-            if (($errors = $this->doValidate($request)) && count($errors) > 0) {
+            if (($errors = $this->doUpdateValidation($request)) && count($errors) > 0) {
                 return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
             }
             // Sửa vào CSDL theo id
-            $reviews = Reviews::where('review_id', $id)->first();
+            $reviews = Reviews::find($id);
             if (!$reviews) {
-                return response()->json(['message' => 'Không tìm thấy '], 404);
+                return response()->json(['message' => 'Không tìm thấy đánh giá'], 404);
             }else{
-                $reviews-> order_id = $request->get("order_id");
                 $reviews-> rating = $request->get('rating');
                 $reviews-> comment = $request->get('comment');
-                $reviews-> date = $request->get('date');
+                $reviews-> date = date('Y-m-d', time());
                 $reviews->save();
             }
             return response()->json(['message' => 'Cập nhật thành công !']); 
@@ -82,7 +86,7 @@ class ReviewController extends Controller
     public function destroy($id)
     {
         try {
-            $reviews = Reviews::where('review_id', $id)->first();
+            $reviews = Reviews::find($id);
             if (!$reviews) {
                 return response()->json(['message' => 'Không tìm thấy '], 404);
             }else{
@@ -143,10 +147,9 @@ class ReviewController extends Controller
 
     public function doValidate($request) {
         $data = [
-            "rating" => "required|numeric|max:11",
-            "comment" => "required",
-            "order_id" => "required|string|max:20",
-            "date" => "required|date_format:Y-m-d",
+            "order_id" => "required",
+            "rating" => "required|numeric|max:5|min:1",
+            "comment" => "required|string",
         ];
 
         $validator = Validator::make($request->all(), $data);
@@ -155,6 +158,21 @@ class ReviewController extends Controller
             return $validator->errors();
         }
 
+        return [];
+    }
+
+    protected function doUpdateValidation($request) {
+        $data = [
+            "rating" => "required|numeric|max:5|min:1",
+            "comment" => "required|string",
+        ];
+    
+        $validator = Validator::make($request->all(), $data);
+    
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+    
         return [];
     }
 }
