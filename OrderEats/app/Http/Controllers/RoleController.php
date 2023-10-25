@@ -62,7 +62,7 @@ class RoleController extends Controller
 
         //Error
         if (!$role)
-            return response()->json(['message' => "Product not found!!"]);
+            return response()->json(['message' => "Không tìm thấy!!"]);
 
         $role->delete();
 

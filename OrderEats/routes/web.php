@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController;
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -37,7 +38,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login'); 
     Route::get('/register', 'Auth\\RegisterController@getRegister');
     Route::post('/register', 'Auth\\RegisterController@register');
-    Route::post('/registershipper', 'Auth\\RegisterShipperController@register');
     Route::post('/logout', 'Auth\\LoginController@logout');   
     Route::get('/me', 'Auth\\LoginController@userDetails');  
     Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
@@ -66,21 +66,17 @@ $router->post('/role', 'RoleController@create');
 $router->put('/role/{id}', 'RoleController@update');
 $router->delete('/role/{id}', 'RoleController@destroy');
 
-
 // user 
-$router->get('/user', 'UserController@index');
-$router->get('/user/{id}', 'UserController@show');
-$router->put('/user/{id}', 'UserController@update');
+Route::group(['middleware' => 'auth'],function () use ($router) { 
+    $router->get('/user', 'UserController@index');
+    $router->get('/user/{id}', 'UserController@show');
+    $router->put('/user/{id}', 'UserController@update');
 // $router->delete('/user/{id}', 'UserController@destroy');
+//
+});
+//index
+$router->get('/index', 'indexController@index');
 
-//order
-$router->get('/orders', 'OrdersController@index');
-$router->get('/orders/{id}', 'OrdersController@show');
-$router->get('/orders1', 'OrdersController@tesst1');
-$router->post('/orders', 'OrdersController@create');
-$router->delete('/orders/{id}', 'OrdersController@delete');
+Route::post('/calculate-distance', [ApiController::class, 'calculateDistance']);
 
-//shipper
-$router->get('/shipper', 'ShipperCheckOrderController@index');
-$router->get('/shipper/{id}', 'ShipperCheckOrderController@show');
-$router->put('/shipper/{id}','ShipperCheckOrderController@update');
+
