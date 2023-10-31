@@ -18,13 +18,13 @@ class OrdersController extends Controller
 
         $user = auth()->user();
 
-        $orders = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->get();
+        $orders = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->paginate(3);
 
         // Kiểm tra xem có đơn hàng của người dùng hay không
         if ($orders->isEmpty()) {
             return response()->json(['message' => 'Bạn chưa có đơn hàng nào.'], 200);
         }
-
+    
         $transformedOrders = $orders->map(function ($order) {
             $menu = $order->menus; // Lấy menu liên quan đến đơn hàng
             $shipper = $order->shipper;
@@ -98,6 +98,16 @@ class OrdersController extends Controller
     }
     
     public function create(Request $request){
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Người dùng chưa đăng nhập'], 401);
+        }
+
+        $user = Auth::user();
+
+        if ($user->roles->name_role =='SHIPPER') {
+            return response()->json(['error' => 'Người dùng có vai trò shipper không thể thực hiện hành động này'], 403);
+        }
+        
         // Validate the user input
         $this->validate($request, [
             // "shipper_id" => "required",
@@ -105,11 +115,11 @@ class OrdersController extends Controller
             "quantity" => "required",
         ]);
 
-        // Create a new Orders instance
+       
         $orders = new Orders();
 
-        // Set the values from the request
-        $user = Auth::user();
+        
+        
         $orders->user_id =  $user->id;
         // $orders->shipper_id = $request->input('shipper_id');
         $orders->menu_id = $request->input('menu_id');
@@ -126,7 +136,7 @@ class OrdersController extends Controller
         $total_price = $menu->price * $orders->quantity;
         $orders->total_price = $total_price;
 
-        //$orders->total_price = $menu->price * $orders->quantity;
+        
 
         // đặt giá trị mặt định cho order_status
         $orders->order_status = $request->input('order_status', 'đang xử lý');
@@ -139,11 +149,20 @@ class OrdersController extends Controller
     }
 
     public function update(Request $request, $id){
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Người dùng chưa đăng nhập'], 401);
+        }
+
+        $user = Auth::user();
+
+        if ($user->roles->name_role =='SHIPPER') {
+            return response()->json(['error' => 'Người dùng có vai trò shipper không thể thực hiện hành động này'], 403);
+        }
+
+
         // Tìm đối tượng Orders dựa trên $id
         $orders = Orders::find($id);
         
-        $user = Auth::user();
-    
         if (!$orders) {
             return response()->json(['error' => 'Order not found'], 404);
         }
@@ -184,6 +203,16 @@ class OrdersController extends Controller
     }   
     
     public function delete(Request $request, $id) {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Người dùng chưa đăng nhập'], 401);
+        }
+
+        $user = Auth::user();
+
+        if ($user->roles->name_role =='SHIPPER') {
+            return response()->json(['error' => 'Người dùng có vai trò shipper không thể thực hiện hành động này'], 403);
+        }
+        
         // Tìm đối tượng Orders dựa trên $id
         $order = Orders::find($id);
     

@@ -23,4 +23,8 @@ class Orders extends Model
     { 
         return $this->belongsTo(User::class, 'shipper_id'); 
     }
+
+    public function getAllPaginated() {
+        return $this->paginate(3); // Phân trang với 10 phần tử trên mỗi trang
+    }
 }

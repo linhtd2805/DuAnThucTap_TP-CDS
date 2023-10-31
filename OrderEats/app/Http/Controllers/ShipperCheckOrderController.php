@@ -76,11 +76,20 @@ class ShipperCheckOrderController extends Controller
     }
 
     public function update(Request $request, $id){
+
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Người dùng chưa đăng nhập'], 401);
+        }
+
+        $user = Auth::user();
+
+        if ($user->roles->name_role =='USER') {
+            return response()->json(['error' => 'Người dùng có vai trò USER không thể thực hiện hành động này'], 403);
+        }
+
         // Tìm đối tượng Orders dựa trên $id
         $orders = Orders::find($id);
         
-        $user = Auth::user();
-    
         if (!$orders) {
             return response()->json(['error' => 'Order not found'], 404);
         }
