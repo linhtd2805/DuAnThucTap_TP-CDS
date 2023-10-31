@@ -12,12 +12,22 @@ use App\Models\User;
 class OrdersController extends Controller
 {
     public function index()
-    {
-        $orders = Orders::with('users', 'menus')->get();
- 
+    {   
+       
+        if(auth()->check()) {
+
+        $user = auth()->user();
+
+        $orders = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->get();
+
+        // Kiểm tra xem có đơn hàng của người dùng hay không
+        if ($orders->isEmpty()) {
+            return response()->json(['message' => 'Bạn chưa có đơn hàng nào.'], 200);
+        }
+
         $transformedOrders = $orders->map(function ($order) {
             $menu = $order->menus; // Lấy menu liên quan đến đơn hàng
-            // $totalPrice = $menu->price * $order->quantity; // Tính tổng giá trị đơn hàng
+            $shipper = $order->shipper;
             
             return [
                 'id' => $order->id,
@@ -30,72 +40,67 @@ class OrdersController extends Controller
                 'price' => $menu->price,
                 'quantity' => $order->quantity,
                 'total_price' => $order->total_price, 
-                // 'total_price' => $totalPrice, // Đưa tổng giá trị vào mảng kết quả
                 'order_status' => $order->order_status,
+                //thong tin shipper
+                'nameShipper' => optional($shipper)->fullname,
+                'phoneShipper' => optional($shipper)->phone
             ];
         });
         
         return response()->json($transformedOrders); // Trả về mảng chứa thông tin đã biến đổi
+        
+    }else {
+        return response()->json(['error' => 'Bạn cần đăng nhập để xem đơn hàng'], 401);
+    }
+
+
     }
     
-public function tesst1(){
-
-    $user = Auth::user();
-
-    $order = Orders::where('user_id', $user->id)->first();
-    if (!$order) {
-        return response()->json(['error' => 'Order not found'], 404);
-    }
-
-    // Biến đổi dữ liệu đơn hàng
-    $transformedOrder = [
-        'id' => $order->id,
-        'fullname' => $order->users->fullname,
-        'phone' => $order->users->phone,
-        'longitude' => $order->users->longitude,
-        'latitude' => $order->users->latitude,
-        'item_name' => $order->menus->item_name,
-        'description' => $order->menus->description,
-        'price' => $order->menus->price,
-        'quantity' => $order->quantity,
-        'total_price' => $order->total_price,
-        'order_status' => $order->order_status,
-    ];
-
-    return response()->json($transformedOrder);
-}
-
     public function show(Request $request, $id)
     {
-        // Tìm đơn hàng dựa trên id
-        $order = auth()->$user->id->find($id);
+       
+        if(auth()->check()) {
+
+            $user = auth()->user();
     
-        if (!$order) {
-            return response()->json(['error' => 'Order not found'], 404);
+            $order = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->where('id',$id)->first();
+    
+            if (!$order) {
+                return response()->json(['error' => 'Order not found'], 404);
+            }
+
+            
+                $menu = $order->menus; // Lấy menu liên quan đến đơn hàng
+                $shipper = $order->shipper;
+                
+                return [
+                    'id' => $order->id,
+                    'fullname' => $order->users->fullname,
+                    'phone' => $order->users->phone,
+                    'longitude' => $order->users->longitude,
+                    'latitude' => $order->users->latitude,
+                    'item_name' => $menu->item_name,
+                    'description' => $menu->description,
+                    'price' => $menu->price,
+                    'quantity' => $order->quantity,
+                    'total_price' => $order->total_price, 
+                    'order_status' => $order->order_status,
+                    //thong tin shipper
+                    'nameShipper' => optional($shipper)->fullname,
+                    'phoneShipper' => optional($shipper)->phone
+                ];
+            
+            return response()->json($transformedOrders); // Trả về mảng chứa thông tin đã biến đổi
+            
+        }else {
+            return response()->json(['error' => 'Bạn cần đăng nhập để xem đơn hàng'], 401);
         }
-    
-        // Biến đổi dữ liệu đơn hàng
-        $transformedOrder = [
-            'id' => $order->id,
-            'fullname' => $order->users->fullname,
-            'phone' => $order->users->phone,
-            'longitude' => $order->users->longitude,
-            'latitude' => $order->users->latitude,
-            'item_name' => $order->menus->item_name,
-            'description' => $order->menus->description,
-            'price' => $order->menus->price,
-            'quantity' => $order->quantity,
-            'total_price' => $order->total_price,
-            'order_status' => $order->order_status,
-        ];
-    
-        return response()->json($transformedOrder);
     }
     
     public function create(Request $request){
         // Validate the user input
         $this->validate($request, [
-            "shipper_id" => "required",
+            // "shipper_id" => "required",
             "menu_id" => "required", 
             "quantity" => "required",
         ]);
@@ -106,7 +111,7 @@ public function tesst1(){
         // Set the values from the request
         $user = Auth::user();
         $orders->user_id =  $user->id;
-        $orders->shipper_id = $request->input('shipper_id');
+        // $orders->shipper_id = $request->input('shipper_id');
         $orders->menu_id = $request->input('menu_id');
         $orders->quantity = $request->input('quantity');
 
@@ -133,32 +138,69 @@ public function tesst1(){
         
     }
 
-    // public function destroy($id)
-    // {
-    //     $orders = Orders::find($id);
-    //     $orders ->delete();
-    //     return response()->json($orders);
-    // }
-    public function delete(Request $request, $id) {
+    public function update(Request $request, $id){
         // Tìm đối tượng Orders dựa trên $id
         $orders = Orders::find($id);
+        
+        $user = Auth::user();
     
         if (!$orders) {
             return response()->json(['error' => 'Order not found'], 404);
         }
-    
-        // Kiểm tra xem trạng thái order_status đã được đặt thành 'hủy bỏ' hay chưa
-        if ($orders->order_status === 'hủy bỏ') {
-            return response()->json(['error' => 'This order has already been canceled.'], 400);
+        
+        // Kiểm tra xem request có chứa các trường không được phép sửa không
+        $nonEditableFields = ['id','fullname', 'phone', 'longitude', 'latitude',
+                                'item_name','description','price','quantity','total_price','nameShipper','phoneShipper'];
+
+        foreach ($nonEditableFields as $field) {
+            if ($request->has($field)) {
+                return response()->json(['error' => "Bạn không có quyền sửa '$field' này.",
+                'message' => "Bạn chỉ được phép xác nhận đơn hàng"], 403);
+            }
         }
-    
-        // Thay đổi trạng thái 'order_status' thành 'hủy bỏ'
-        $orders->order_status = 'hủy bỏ';
-    
-        // Lưu thay đổi vào cơ sở dữ liệu
+
+        if (!$request->has('order_status')) {
+            return response()->json(['error' => 'Bạn không có quyền cập nhật trạng thái đơn hàng'], 403);
+        }
+        
+        
+        if ($orders->order_status === 'Đang xử lý' && $request->input('order_status') === 'Hủy bỏ' && is_null($orders->shipper_id)) {
+           
+            $orders->order_status = $request->input('order_status');
+
+        } 
+        if (!is_null($orders->shipper_id) && $orders->order_status === 'Đang giao' && $request->input('order_status') === 'Đã giao') {
+           
+               $orders->order_status = $request->input('order_status');
+        }
+        else {
+            return response()->json(['error' => 'Đơn hàng đã giao bạn không được thay đổi bất kỳ trạng thái nào'], 403);
+        }
+        
+        
         $orders->save();
     
-        return response()->json(['message' => 'Order has been canceled successfully']);
+        return response()->json($orders);
+    }   
+    
+    public function delete(Request $request, $id) {
+        // Tìm đối tượng Orders dựa trên $id
+        $order = Orders::find($id);
+    
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+    
+        // Kiểm tra xem trạng thái order_status đã được đặt thành 'Hủy bỏ' hay chưa
+        if ($order->order_status !== 'Hủy bỏ') {
+            return response()->json(['error' => 'Đơn hàng vẫn đang xử lý bạn k đc phép xóa '], 400);
+        }
+    
+        // Xóa đơn hàng hoàn toàn
+        $order->delete();
+    
+        return response()->json(['message' => 'Order has been deleted successfully']);
     }
+    
 
 }

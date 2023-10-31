@@ -19,4 +19,8 @@ class Orders extends Model
     { 
         return $this->belongsTo(Menus::class, 'menu_id'); 
     }
+    public function shipper() 
+    { 
+        return $this->belongsTo(User::class, 'shipper_id'); 
+    }
 }

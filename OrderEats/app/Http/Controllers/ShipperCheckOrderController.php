@@ -6,21 +6,24 @@ use Illuminate\Http\Request;
 use App\Models\Orders;
 use App\Models\Menus;
 use App\Models\User;  
+use Illuminate\Support\Facades\Auth;
 
 class ShipperCheckOrderController extends Controller
 {
     public function index()
     {
-        $orders = Orders::with('users', 'menus')->get();
+        $orders = Orders::with('users', 'menus','shipper')->get();
 
-        $filteredOrders = $orders->filter(function ($order) {
-            return $order->order_status === 'Đang xử lý' || $order->order_status === 'Đã giao';
-        });
+        // $filteredOrders = $orders->filter(function ($order) {
+        //     return $order->order_status === 'Đang xử lý' || $order->order_status === 'Đã giao';
+        // });
 
-        $transformedOrders = $filteredOrders->map(function ($order) {
+        $transformedOrders = $orders->map(function ($order) {
             $menu = $order->menus; // Lấy menu liên quan đến đơn hàng
             // $totalPrice = $menu->price * $order->quantity; // Tính tổng giá trị đơn hàng
-            
+            $shipper = $order->shipper;
+
+
             return [
                 'id' => $order->id,
                 'fullname' => $order->users->fullname,
@@ -34,6 +37,8 @@ class ShipperCheckOrderController extends Controller
                 'total_price' => $order->total_price, 
                 // 'total_price' => $totalPrice, // Đưa tổng giá trị vào mảng kết quả
                 'order_status' => $order->order_status,
+                'nameShipper' => optional($shipper)->fullname,
+                'phoneShipper' => optional($shipper)->phone,
             ];
         });
         
@@ -43,12 +48,13 @@ class ShipperCheckOrderController extends Controller
     public function show(Request $request, $id)
     {
         // Tìm đơn hàng dựa trên id
-        $order = Orders::with('users', 'menus')->find($id);
+        $order = Orders::with('users', 'menus','shipper')->find($id);
+        
     
         if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
-       
+        $shipper = $order->shipper;
         // Biến đổi dữ liệu đơn hàng
         $transformedOrder = [
             'id' => $order->id,
@@ -62,6 +68,8 @@ class ShipperCheckOrderController extends Controller
             'quantity' => $order->quantity,
             'total_price' => $order->total_price,
             'order_status' => $order->order_status,
+            'nameShipper' => optional($shipper)->fullname,
+            'phoneShipper' => optional($shipper)->phone,
         ];
     
         return response()->json($transformedOrder);
@@ -70,14 +78,16 @@ class ShipperCheckOrderController extends Controller
     public function update(Request $request, $id){
         // Tìm đối tượng Orders dựa trên $id
         $orders = Orders::find($id);
+        
+        $user = Auth::user();
     
         if (!$orders) {
             return response()->json(['error' => 'Order not found'], 404);
         }
         
         // Kiểm tra xem request có chứa các trường không được phép sửa không
-        $nonEditableFields = ['fullname', 'phone', 'longitude', 'latitude',
-                                'item_name','description','price','quantity','total_price'];
+        $nonEditableFields = ['id','fullname', 'phone', 'longitude', 'latitude',
+                                'item_name','description','price','quantity','total_price','nameShipper','phoneShipper'];
 
         foreach ($nonEditableFields as $field) {
             if ($request->has($field)) {
@@ -86,13 +96,31 @@ class ShipperCheckOrderController extends Controller
             }
         }
 
-        // Kiểm tra và cập nhật trường 'order_status' nếu nó được cung cấp trong request
-        if ($request->has('order_status') && $request->input('order_status') === 'Đang xử lý') {
+       
+        $shipper = Orders::findOrFail($id); // Thay $order_id bằng ID của đơn hàng cần cập nhật
+
+        $loggedInShipperId = $user->id;
+
+        if (!$request->has('order_status')) {
+            return response()->json(['error' => 'Bạn không có quyền cập nhật trạng thái đơn hàng'], 403);
+        }
+        
+        if (is_null($orders->shipper_id)) {
+            
+            $orders->shipper_id = $user->id; // id người giao hàng
+
+        } elseif ($shipper->shipper_id !== $loggedInShipperId) {
+            return response()->json(['error' => 'Đơn hàng này đã có Shipper nhận bạn không được thay đổi'], 403);
+        }
+        
+        if ($orders->order_status === 'Đang xử lý' && $request->input('order_status') === 'Đang giao') {
             $orders->order_status = $request->input('order_status');
-        }else       
-            return response()->json(['error' => 'Bạn không có quyền cập nhật trạng thái đơn hàng Đang giao.'], 403);
-    
-        // Lưu thay đổi vào cơ sở dữ liệu
+        } elseif ($orders->order_status === 'Đang giao' && $request->input('order_status') === 'Hủy bỏ') {
+            $orders->order_status = $request->input('order_status');
+        } else {
+            return response()->json(['error' => 'Bạn chỉ có thể xác nhận đơn hàng hoặc hủy bỏ'], 403);
+        }
+        
         $orders->save();
     
         return response()->json($orders);
