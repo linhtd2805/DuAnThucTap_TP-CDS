@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 /*
@@ -19,11 +20,11 @@ $router->get('/', function () use ($router) {
 });
 
 $router->get('/testDB', 'Controller@checkConnection');
-Route::get('/reviews' , 'ReviewController@index');
-Route::get('/reviews/{id}' , 'ReviewController@show');
+Route::get('/reviews', 'ReviewController@index');
+Route::get('/reviews/{id}', 'ReviewController@show');
 Route::put('/reviews/{id}', 'ReviewController@update');
 Route::delete('/reviews/{id}', 'ReviewController@destroy');
-Route::get('/reviews/search/{keyword}' , 'ReviewController@search');
+Route::get('/reviews/search/{keyword}', 'ReviewController@search');
 Route::put('/reviews/softDelete/{id}', 'ReviewController@softDelete');
 Route::put('/reviews/reverse/{id}', 'ReviewController@reverse');
 
@@ -35,13 +36,14 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-    Route::post('/login', 'Auth\\LoginController@login'); 
+    Route::get('/login', 'Auth\\LoginController@login1');
+    Route::post('/login', 'Auth\\LoginController@login');
     Route::get('/register', 'Auth\\RegisterController@getRegister');
     Route::post('/register', 'Auth\\RegisterController@register');
-    Route::post('/logout', 'Auth\\LoginController@logout');   
-    Route::get('/me', 'Auth\\LoginController@userDetails');  
-    Route::get('/check-login', 'Auth\\LoginController@checkLogin'); 
-    Route::post('/update-profile', 'Auth\\LoginController@updateProfile'); 
+    Route::post('/logout', 'Auth\\LoginController@logout');
+    Route::get('/me', 'Auth\\LoginController@userDetails');
+    Route::get('/check-login', 'Auth\\LoginController@checkLogin');
+    Route::post('/update-profile', 'Auth\\LoginController@updateProfile');
 });
 
 //menus
@@ -51,13 +53,14 @@ $router->post('/menus/create', 'MenusController@store');
 $router->post('/menus/update/{id}', 'MenusController@update');
 $router->delete('/menus/delete/{id}', 'MenusController@destroy');
 
-Route::group(['middleware' => 'auth'],function () use ($router) {
+Route::group(['middleware' => 'auth'], function () use ($router) {
     Route::post('/store-token', 'FirebaseController@updateDeviceToken');
     Route::post('/reviews', 'ReviewController@store');
 });
 
 // gửi thông báo
 Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification');
+Route::get('/updateToken', 'FirebaseController@updateDeviceToken');
 
 /*role*/
 $router->get('/role', 'RoleController@index');
@@ -67,16 +70,22 @@ $router->put('/role/{id}', 'RoleController@update');
 $router->delete('/role/{id}', 'RoleController@destroy');
 
 // user 
-Route::group(['middleware' => 'auth'],function () use ($router) { 
+Route::group(['middleware' => 'auth'], function () use ($router) {
     $router->get('/user', 'UserController@index');
     $router->get('/user/{id}', 'UserController@show');
     $router->put('/user/{id}', 'UserController@update');
-// $router->delete('/user/{id}', 'UserController@destroy');
+    $router->get('/user/search/{keyword}', 'UserController@search');
+
+    // $router->delete('/user/{id}', 'UserController@destroy');
 //
 });
 //index
-$router->get('/index', 'indexController@index');
+$router->get('/calculateDistance', 'ApiController@calculateDistance');
 
 Route::post('/calculate-distance', [ApiController::class, 'calculateDistance']);
+$router->post('/buy', 'ActivityLogController@buy');
+$router->post('/shipper/receive', 'ShipperController@receiveOrder');
+
+
 
 

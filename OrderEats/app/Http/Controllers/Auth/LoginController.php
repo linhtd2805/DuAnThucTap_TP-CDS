@@ -17,6 +17,10 @@ class LoginController extends Controller
         $this->jwt = $jwt;
     }
 
+    public function login1(){
+        return view('login');
+    }
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->only('username', 'password'), [
