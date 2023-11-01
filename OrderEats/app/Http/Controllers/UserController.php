@@ -40,8 +40,8 @@ class UserController extends Controller
       'username' => 'sometimes|required|string|max:255',
       'password' => 'sometimes|required|string|min:6',
       'fullname' => 'sometimes|required|string|max:255',
-      'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id, 
-      'phone' => 'sometimes|required|regex:/^[0-9]{10}$/|unique:users,phone,' . $id,
+      'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id, // mỗi id chỉ duy nhất 1 email
+      'phone' => 'sometimes|required|regex:/^[0-9]{10}$/|unique:users,phone,' . $id, // mỗi id chỉ có 1 sdt
       'role_id' => 'sometimes|required|integer',
       'latitude' => 'sometimes|required|numeric',
       'longitude' => 'sometimes|required|numeric',
