@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Controllers\FirebaseController;
 
 use Illuminate\Http\Request;
 use App\Models\Orders;
@@ -22,7 +23,7 @@ class OrdersController extends Controller
             return response()->json(['error' => 'Người dùng có vai trò shipper không thể thực hiện hành động này'], 403);
         }
 
-        $orders = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->paginate(3);
+        $orders = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->get();
 
         // Kiểm tra xem có đơn hàng của người dùng hay không
         if ($orders->isEmpty()) {
@@ -106,6 +107,9 @@ class OrdersController extends Controller
     }
     
     public function create(Request $request){
+        
+
+
         if (!Auth::check()) {
             return response()->json(['error' => 'Người dùng chưa đăng nhập'], 401);
         }
@@ -150,6 +154,8 @@ class OrdersController extends Controller
         $orders->order_status = $request->input('order_status', 'đang xử lý');
 
         // Save the data to the database
+        $fcm = new FirebaseController();
+        $result = $fcm ->sendNotification($user->id, "Trạng Thái Hàng", "Đặt hàng thành công");
         $orders->save();
 
         return response()->json($orders);
@@ -194,11 +200,15 @@ class OrdersController extends Controller
         if ($orders->order_status === 'Đang xử lý' && $request->input('order_status') === 'Hủy bỏ' && is_null($orders->shipper_id)) {
            
             $orders->order_status = $request->input('order_status');
+            $fcm = new FirebaseController();
+            $result = $fcm ->sendNotification($user->id, "Trạng Thái Hàng", "Hủy đơn hàng thành công");
 
         }
         elseif (!is_null($orders->shipper_id) && $orders->order_status === 'Đang giao' && $request->input('order_status') === 'Đã giao') {
            
                $orders->order_status = $request->input('order_status');
+               $fcm = new FirebaseController();
+               $result = $fcm ->sendNotification($user->id, "Trạng Thái Hàng", "Đơn hàng đã nhận thành công");
         }else {
             return response()->json(['error' => 'Bạn không được thay đổi trạng thái đơn hàng hiện tại '], 403);
         } 

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Controllers\FirebaseController;
 
 use Illuminate\Http\Request;
 use App\Models\Orders;
@@ -131,6 +132,7 @@ class ShipperCheckOrderController extends Controller
 
         $loggedInShipperId = $user->id;
 
+
         if (!$request->has('order_status')) {
             return response()->json(['error' => 'Bạn không có quyền cập nhật trạng thái đơn hàng'], 403);
         }
@@ -145,8 +147,15 @@ class ShipperCheckOrderController extends Controller
         
         if ($orders->order_status === 'Đang xử lý' && $request->input('order_status') === 'Đang giao') {
             $orders->order_status = $request->input('order_status');
+            $fcm = new FirebaseController();
+            $name = $orders->users->fullname;
+            $result = $fcm ->sendNotification($orders->user_id, "Trạng Thái Hàng '$name'", "Đơn hàng của bạn đang giao");
+            
         } elseif ($orders->order_status === 'Đang giao' && $request->input('order_status') === 'Hủy bỏ') {
             $orders->order_status = $request->input('order_status');
+            $fcm = new FirebaseController();
+            $name = $orders->users->fullname;
+            $result = $fcm ->sendNotification($orders->user_id, "Trạng Thái Hàng '$name'", "Đơn hàng của bạn đã bị hủy");
         } else {
             return response()->json(['error' => 'Bạn chỉ có thể xác nhận đơn hàng hoặc có thể hủy bỏ đơn hàng đang giao'], 403);
         }
