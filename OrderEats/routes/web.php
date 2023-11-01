@@ -53,14 +53,6 @@ $router->post('/menus/create', 'MenusController@store');
 $router->post('/menus/update/{id}', 'MenusController@update');
 $router->delete('/menus/delete/{id}', 'MenusController@destroy');
 
-Route::group(['middleware' => 'auth'],function () use ($router) {
-    Route::post('/store-token', 'FirebaseController@updateDeviceToken');
-});
-
-// Trong route
-Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification');
-
-
 /*role*/
 $router->get('/role', 'RoleController@index');
 $router->get('/role/{id}', 'RoleController@show');
