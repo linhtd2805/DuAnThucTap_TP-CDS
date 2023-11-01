@@ -73,13 +73,14 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
     $router->get('/user/{id}', 'UserController@show');
     $router->put('/user/{id}', 'UserController@update');
     $router->get('/user/search/{keyword}', 'UserController@search');
-
+    
     // $router->delete('/user/{id}', 'UserController@destroy');
+    
 //
 });
 //index
-$router->get('/calculateDistance', 'ApiController@calculateDistance');
+//$router->get('/calculateDistance', 'ApiController@calculateDistance');
 
-Route::post('/calculate-distance', [ApiController::class, 'calculateDistance']);
-
+//Maps
+$router->post('/calculate-distance', 'ApiController@calculateDistance');
 

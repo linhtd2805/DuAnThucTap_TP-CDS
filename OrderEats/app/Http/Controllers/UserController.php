@@ -19,11 +19,13 @@ class UserController extends Controller
   {
     $user = User::find($id);
 
-    if (!$user)
-      return response()->json(['message' => "Không thể tìm thấy!!"]);
+    if (!$user) {
+      return response()->json(['error' => 'Người dùng không tồn tại'], 404);
+    }
 
-    return response()->json($user);
+    return response()->json(['success' => 'Đã tìm thấy người dùng', 'user' => $user]);
   }
+
 
   public function update(Request $request, $id)
   {
@@ -40,8 +42,10 @@ class UserController extends Controller
       'username' => 'sometimes|required|string|max:255',
       'password' => 'sometimes|required|string|min:6',
       'fullname' => 'sometimes|required|string|max:255',
-      'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id, // mỗi id chỉ duy nhất 1 email
-      'phone' => 'sometimes|required|regex:/^[0-9]{10}$/|unique:users,phone,' . $id, // mỗi id chỉ có 1 sdt
+      'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id,
+      // mỗi id chỉ duy nhất 1 email
+      'phone' => 'sometimes|required|regex:/^[0-9]{10}$/|unique:users,phone,' . $id,
+      // mỗi id chỉ có 1 sdt
       'role_id' => 'sometimes|required|integer',
       'latitude' => 'sometimes|required|numeric',
       'longitude' => 'sometimes|required|numeric',
@@ -67,22 +71,26 @@ class UserController extends Controller
     // Lưu thay đổi vào database
     $user->save();
 
-    return response()->json($user);
+    // Trả về thông báo thành công
+    return response()->json(['success' => 'Cập nhật người dùng thành công', 'user' => $user]);
   }
   // Tìm kiếm theo data
-  public function search($keyword) {
-        
+  public function search($keyword)
+  {
     $results = User::where('id', 'like', '%' . $keyword . '%')
-    ->orWhere('username', 'like', '%' . $keyword . '%')
-    ->orWhere('fullname', 'like', '%' . $keyword . '%')
-    ->orWhere('email', 'like', '%' . $keyword . '%')
-    ->orWhere('phone', 'like', '%' . $keyword . '%')
-   
-    
-    ->get();
+      ->orWhere('username', 'like', '%' . $keyword . '%')
+      ->orWhere('fullname', 'like', '%' . $keyword . '%')
+      ->orWhere('email', 'like', '%' . $keyword . '%')
+      ->orWhere('phone', 'like', '%' . $keyword . '%')
+      ->get();
 
-    return response()->json($results);
-}
+    if ($results->isEmpty()) {
+      return response()->json(['error' => 'Không tìm thấy kết quả'], 404);
+    }
+
+    return response()->json(['success' => 'Đã tìm thấy', 'user' => $results]);
+  }
+
 
 
 }
