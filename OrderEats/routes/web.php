@@ -36,6 +36,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
+    Route::get('/login', 'Auth\\LoginController@login1');
     Route::post('/login', 'Auth\\LoginController@login');
     Route::get('/register', 'Auth\\RegisterController@getRegister');
     Route::post('/register', 'Auth\\RegisterController@register');
@@ -59,6 +60,7 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
 
 // gửi thông báo
 Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification');
+Route::get('/updateToken', 'FirebaseController@updateDeviceToken');
 
 /*role*/
 $router->get('/role', 'RoleController@index');
