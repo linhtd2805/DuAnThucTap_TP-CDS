@@ -81,5 +81,9 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
 $router->get('/calculateDistance', 'ApiController@calculateDistance');
 
 Route::post('/calculate-distance', [ApiController::class, 'calculateDistance']);
+$router->post('/buy', 'ActivityLogController@buy');
+$router->post('/shipper/receive', 'ShipperController@receiveOrder');
+
+
 
 
