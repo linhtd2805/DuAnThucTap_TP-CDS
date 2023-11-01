@@ -12,12 +12,21 @@ class ShipperCheckOrderController extends Controller
 {
     public function index()
     {
+        if(auth()->check()) {
+
+            $user = auth()->user();
+
+            if ($user->roles->name_role =='USER') {
+                return response()->json(['error' => 'Người dùng có vai trò USER không thể thực hiện hành động này'], 403);
+            }
+
         $orders = Orders::with('users', 'menus','shipper')->get();
 
-        // $filteredOrders = $orders->filter(function ($order) {
-        //     return $order->order_status === 'Đang xử lý' || $order->order_status === 'Đã giao';
-        // });
-
+         // Kiểm tra xem có đơn hàng của người dùng hay không
+         if ($orders->isEmpty()) {
+            return response()->json(['message' => 'Bạn chưa có đơn hàng nào.'], 200);
+        }
+    
         $transformedOrders = $orders->map(function ($order) {
             $menu = $order->menus; // Lấy menu liên quan đến đơn hàng
             // $totalPrice = $menu->price * $order->quantity; // Tính tổng giá trị đơn hàng
@@ -43,10 +52,20 @@ class ShipperCheckOrderController extends Controller
         });
         
         return response()->json($transformedOrders); // Trả về mảng chứa thông tin đã biến đổi
+    
+        }else {
+            return response()->json(['error' => 'Bạn cần đăng nhập để xem đơn hàng'], 401);
+        }
     }
-
     public function show(Request $request, $id)
     {
+        if(auth()->check()) {
+
+            $user = auth()->user();
+
+            if ($user->roles->name_role =='USER') {
+                return response()->json(['error' => 'Người dùng có vai trò USER không thể thực hiện hành động này'], 403);
+            }
         // Tìm đơn hàng dựa trên id
         $order = Orders::with('users', 'menus','shipper')->find($id);
         
@@ -73,8 +92,10 @@ class ShipperCheckOrderController extends Controller
         ];
     
         return response()->json($transformedOrder);
+        }else {
+            return response()->json(['error' => 'Bạn cần đăng nhập để xem đơn hàng'], 401);
+        }
     }
-
     public function update(Request $request, $id){
 
         if (!Auth::check()) {
@@ -127,7 +148,7 @@ class ShipperCheckOrderController extends Controller
         } elseif ($orders->order_status === 'Đang giao' && $request->input('order_status') === 'Hủy bỏ') {
             $orders->order_status = $request->input('order_status');
         } else {
-            return response()->json(['error' => 'Bạn chỉ có thể xác nhận đơn hàng hoặc hủy bỏ'], 403);
+            return response()->json(['error' => 'Bạn chỉ có thể xác nhận đơn hàng hoặc có thể hủy bỏ đơn hàng đang giao'], 403);
         }
         
         $orders->save();

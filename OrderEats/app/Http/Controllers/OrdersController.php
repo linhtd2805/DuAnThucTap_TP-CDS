@@ -18,6 +18,10 @@ class OrdersController extends Controller
 
         $user = auth()->user();
 
+        if ($user->roles->name_role =='SHIPPER') {
+            return response()->json(['error' => 'Người dùng có vai trò shipper không thể thực hiện hành động này'], 403);
+        }
+
         $orders = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->paginate(3);
 
         // Kiểm tra xem có đơn hàng của người dùng hay không
@@ -62,6 +66,10 @@ class OrdersController extends Controller
         if(auth()->check()) {
 
             $user = auth()->user();
+
+            if ($user->roles->name_role =='SHIPPER') {
+                return response()->json(['error' => 'Người dùng có vai trò shipper không thể thực hiện hành động này'], 403);
+            }
     
             $order = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->where('id',$id)->first();
     
@@ -187,14 +195,14 @@ class OrdersController extends Controller
            
             $orders->order_status = $request->input('order_status');
 
-        } 
-        if (!is_null($orders->shipper_id) && $orders->order_status === 'Đang giao' && $request->input('order_status') === 'Đã giao') {
+        }
+        elseif (!is_null($orders->shipper_id) && $orders->order_status === 'Đang giao' && $request->input('order_status') === 'Đã giao') {
            
                $orders->order_status = $request->input('order_status');
-        }
-        else {
-            return response()->json(['error' => 'Đơn hàng đã giao bạn không được thay đổi bất kỳ trạng thái nào'], 403);
-        }
+        }else {
+            return response()->json(['error' => 'Bạn không được thay đổi trạng thái đơn hàng hiện tại '], 403);
+        } 
+        
         
         
         $orders->save();
