@@ -17,7 +17,7 @@ class FirebaseController extends Controller
         return response()->json(['Token successfully stored.']);
     }
 
-    public function sendNotification(Request $request, $id) {
+    public function sendNotification( $id, $title, $body) {
         $url = 'https://fcm.googleapis.com/fcm/send';
 
         // Lấy device_token của người dùng dựa trên user_id
@@ -30,8 +30,8 @@ class FirebaseController extends Controller
         $data = [
             "registration_ids" => $deviceTokens,
             "notification" => [
-                "title" => $request->title, // Truyền title
-                "body" => $request->body,  // Truyền body thông báo
+                "title" => $title, // Truyền title
+                "body" => $body,  // Truyền body thông báo
             ]
         ];
         $encodedData = json_encode($data);
@@ -60,7 +60,7 @@ class FirebaseController extends Controller
         // Đóng kết nối
         curl_close($ch);
         // FCM response
-        dd($result);
+        // dd($result);
 }
 
 
