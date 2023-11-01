@@ -8,7 +8,7 @@ use App\Models\Orders;
 use App\Models\Menus;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;  
-
+use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
 {
@@ -153,6 +153,7 @@ class OrdersController extends Controller
         // đặt giá trị mặt định cho order_status
         $orders->order_status = $request->input('order_status', 'đang xử lý');
 
+        $this->createActivityLog(auth()->user()->id, 'Mua hàng'); 
         // Save the data to the database
         $fcm = new FirebaseController();
         $result = $fcm ->sendNotification($user->id, "Trạng Thái Hàng", "Đặt hàng thành công");
@@ -160,6 +161,14 @@ class OrdersController extends Controller
 
         return response()->json($orders);
         
+    }
+
+    private function createActivityLog($userId, $activityType)
+    {
+        DB::table('activity_logs')->insert([
+            'user_id' => $userId,
+            'activityType' => $activityType,
+        ]);
     }
 
     public function update(Request $request, $id){
@@ -200,15 +209,23 @@ class OrdersController extends Controller
         if ($orders->order_status === 'Đang xử lý' && $request->input('order_status') === 'Hủy bỏ' && is_null($orders->shipper_id)) {
            
             $orders->order_status = $request->input('order_status');
+<<<<<<< HEAD
             $fcm = new FirebaseController();
             $result = $fcm ->sendNotification($user->id, "Trạng Thái Hàng", "Hủy đơn hàng thành công");
 
+=======
+            $this->createActivityLog(auth()->user()->id, 'Hủy bỏ'); 
+>>>>>>> d675f3cae5b87997ece01d313543704d5ff08de6
         }
         elseif (!is_null($orders->shipper_id) && $orders->order_status === 'Đang giao' && $request->input('order_status') === 'Đã giao') {
            
                $orders->order_status = $request->input('order_status');
+<<<<<<< HEAD
                $fcm = new FirebaseController();
                $result = $fcm ->sendNotification($user->id, "Trạng Thái Hàng", "Đơn hàng đã nhận thành công");
+=======
+               $this->createActivityLog(auth()->user()->id, 'Đã giao');
+>>>>>>> d675f3cae5b87997ece01d313543704d5ff08de6
         }else {
             return response()->json(['error' => 'Bạn không được thay đổi trạng thái đơn hàng hiện tại '], 403);
         } 

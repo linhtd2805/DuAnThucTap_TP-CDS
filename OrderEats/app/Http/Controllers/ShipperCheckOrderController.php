@@ -8,6 +8,8 @@ use App\Models\Orders;
 use App\Models\Menus;
 use App\Models\User;  
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 
 class ShipperCheckOrderController extends Controller
 {
@@ -147,6 +149,7 @@ class ShipperCheckOrderController extends Controller
         
         if ($orders->order_status === 'Đang xử lý' && $request->input('order_status') === 'Đang giao') {
             $orders->order_status = $request->input('order_status');
+<<<<<<< HEAD
             $fcm = new FirebaseController();
             $name = $orders->users->fullname;
             $result = $fcm ->sendNotification($orders->user_id, "Trạng Thái Hàng '$name'", "Đơn hàng của bạn đang giao");
@@ -156,14 +159,33 @@ class ShipperCheckOrderController extends Controller
             $fcm = new FirebaseController();
             $name = $orders->users->fullname;
             $result = $fcm ->sendNotification($orders->user_id, "Trạng Thái Hàng '$name'", "Đơn hàng của bạn đã bị hủy");
+=======
+            $this->createActivityLog(auth()->user()->id, 'Đang giao');
+
+        } elseif ($orders->order_status === 'Đang giao' && $request->input('order_status') === 'Hủy bỏ') {
+            $orders->order_status = $request->input('order_status');
+            $this->createActivityLog(auth()->user()->id, 'Hủy đơn hàng');
+            
+>>>>>>> d675f3cae5b87997ece01d313543704d5ff08de6
         } else {
             return response()->json(['error' => 'Bạn chỉ có thể xác nhận đơn hàng hoặc có thể hủy bỏ đơn hàng đang giao'], 403);
         }
         
         $orders->save();
-    
+
+        
+       
+
         return response()->json($orders);
     }   
+
+    private function createActivityLog($userId, $activityType)
+    {
+        DB::table('activity_logs')->insert([
+            'user_id' => $userId,
+            'activityType' => $activityType,
+        ]);
+    }
  
 }
 
