@@ -10,7 +10,7 @@ class UserController extends Controller
 {
   public function index(Request $request)
   {
-    $user = User::paginate(2);
+    $user = User::paginate(2); // paginate(2) phân trang hiển thị 2 User trên 1 Page
 
     return response()->json($user);
   }
