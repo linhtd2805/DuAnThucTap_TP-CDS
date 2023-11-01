@@ -152,19 +152,14 @@ class ShipperCheckOrderController extends Controller
             $fcm = new FirebaseController();
             $name = $orders->users->fullname;
             $result = $fcm ->sendNotification($orders->user_id, "Trạng Thái Hàng '$name'", "Đơn hàng của bạn đang giao");
-            
-        } elseif ($orders->order_status === 'Đang giao' && $request->input('order_status') === 'Hủy bỏ') {
+        }elseif ($orders->order_status === 'Đang giao' && $request->input('order_status') === 'Hủy bỏ') {
             $orders->order_status = $request->input('order_status');
             $fcm = new FirebaseController();
             $name = $orders->users->fullname;
             $result = $fcm ->sendNotification($orders->user_id, "Trạng Thái Hàng '$name'", "Đơn hàng của bạn đã bị hủy");
             $this->createActivityLog(auth()->user()->id, 'Đang giao');
 
-        } elseif ($orders->order_status === 'Đang giao' && $request->input('order_status') === 'Hủy bỏ') {
-            $orders->order_status = $request->input('order_status');
-            $this->createActivityLog(auth()->user()->id, 'Hủy đơn hàng');
-            
-        } else {
+        }else {
             return response()->json(['error' => 'Bạn chỉ có thể xác nhận đơn hàng hoặc có thể hủy bỏ đơn hàng đang giao'], 403);
         }
         
