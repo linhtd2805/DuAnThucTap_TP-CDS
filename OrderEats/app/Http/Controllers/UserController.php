@@ -20,59 +20,69 @@ class UserController extends Controller
     $user = User::find($id);
 
     if (!$user)
-      return response()->json(['message' => "Product not found!!"]);
+      return response()->json(['message' => "Không thể tìm thấy!!"]);
 
     return response()->json($user);
   }
 
   public function update(Request $request, $id)
   {
-
-    //all it to the database
+    // Tìm người dùng trong database
     $user = User::find($id);
 
-    //bắt lỗi
+    // Kiểm tra nếu người dùng không tồn tại
     if (!$user) {
-      return response()->json(['error' => 'User not found'], 404);
+      return response()->json(['error' => 'Không tìm thấy người dùng'], 404);
     }
 
+    // Validate dữ liệu được gửi lên
     $validator = Validator::make($request->all(), [
-      'username' => 'required|string|max:255',
-      'password' => 'required|string|min:6',
-      'fullname' => 'required|string|max:255',
-      'email' => 'required|email|max:255',
-      'phone' => 'required|string|max:10',
-      'role_id' => 'required|integer',
-      'latitude' => 'required|numeric',
-      'longitude' => 'required|numeric',
+      'username' => 'sometimes|required|string|max:255',
+      'password' => 'sometimes|required|string|min:6',
+      'fullname' => 'sometimes|required|string|max:255',
+      'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id, 
+      'phone' => 'sometimes|required|regex:/^[0-9]{10}$/|unique:users,phone,' . $id,
+      'role_id' => 'sometimes|required|integer',
+      'latitude' => 'sometimes|required|numeric',
+      'longitude' => 'sometimes|required|numeric',
     ]);
 
+    // Nếu validation fails, trả về lỗi
     if ($validator->fails()) {
       return response()->json(['error' => $validator->errors()], 400);
     }
-    $user->username = $request->input('username');
-    $user->password = $request->input('password');
-    $user->fullname = $request->input('fullname');
-    $user->email = $request->input('email');
-    $user->phone = $request->input('phone');
-    $user->role_id = $request->input('role_id');
-    $user->latitude = $request->input('latitude');
-    $user->longitude = $request->input('longitude');
 
+    // Cập nhật chỉ những trường dữ liệu được gửi lên
+    $user->fill($request->only([
+      'username',
+      'password',
+      'fullname',
+      'email',
+      'phone',
+      'role_id',
+      'latitude',
+      'longitude'
+    ]));
+
+    // Lưu thay đổi vào database
     $user->save();
 
     return response()->json($user);
   }
+  // Tìm kiếm theo data
+  public function search($keyword) {
+        
+    $results = User::where('id', 'like', '%' . $keyword . '%')
+    ->orWhere('username', 'like', '%' . $keyword . '%')
+    ->orWhere('fullname', 'like', '%' . $keyword . '%')
+    ->orWhere('email', 'like', '%' . $keyword . '%')
+    ->orWhere('phone', 'like', '%' . $keyword . '%')
+   
+    
+    ->get();
 
-  // public function destroy($id){
-//     $user = User::find($id);
+    return response()->json($results);
+}
 
-  //     //Error
-//     if(!$user) 
-//     return response()->json(['message' => "Product not found!!"]);
 
-  //     $user->delete();
-
-  //     return response()->json(['message' => 'Product success delete'], 201);
-// }
 }
