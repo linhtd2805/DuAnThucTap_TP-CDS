@@ -88,4 +88,10 @@ $router->post('/shipper/receive', 'ShipperController@receiveOrder');
 
 
 
+//order
+$router->get('/orders', 'OrdersController@index');
+$router->get('/orders/{id}', 'OrdersController@show');
+$router->put('/orders/{id}', 'OrdersController@update');
+$router->post('/orders', 'OrdersController@create');
+$router->delete('/orders/{id}', 'OrdersController@delete');
 
