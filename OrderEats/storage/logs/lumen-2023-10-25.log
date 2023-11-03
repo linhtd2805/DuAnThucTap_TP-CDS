@@ -1,0 +1,18 @@
+[2023-10-25 07:22:17] local.ERROR: Class "Laravel\Passport\PassportServiceProvider" not found {"exception":"[object] (Error(code: 0): Class \"Laravel\\Passport\\PassportServiceProvider\" not found at D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\vendor\\laravel\\lumen-framework\\src\\Application.php:223)
+[stacktrace]
+#0 D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\bootstrap\\app.php(100): Laravel\\Lumen\\Application->register('Laravel\\\\Passpor...')
+#1 D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\artisan(18): require('D:\\\\ThucTap\\\\Lume...')
+#2 {main}
+"} 
+[2023-10-25 07:22:54] local.ERROR: Class "Laravel\Passport\PassportServiceProvider" not found {"exception":"[object] (Error(code: 0): Class \"Laravel\\Passport\\PassportServiceProvider\" not found at D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\vendor\\laravel\\lumen-framework\\src\\Application.php:223)
+[stacktrace]
+#0 D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\bootstrap\\app.php(100): Laravel\\Lumen\\Application->register('Laravel\\\\Passpor...')
+#1 D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\artisan(18): require('D:\\\\ThucTap\\\\Lume...')
+#2 {main}
+"} 
+[2023-10-25 07:24:47] local.ERROR: Class "Laravel\Passport\PassportServiceProvider" not found {"exception":"[object] (Error(code: 0): Class \"Laravel\\Passport\\PassportServiceProvider\" not found at D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\vendor\\laravel\\lumen-framework\\src\\Application.php:223)
+[stacktrace]
+#0 D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\bootstrap\\app.php(100): Laravel\\Lumen\\Application->register('Laravel\\\\Passpor...')
+#1 D:\\ThucTap\\Lumen\\DuAnThucTap_TP-CDS\\OrderEats\\artisan(18): require('D:\\\\ThucTap\\\\Lume...')
+#2 {main}
+"} 

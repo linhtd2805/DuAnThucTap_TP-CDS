@@ -97,6 +97,7 @@ $app->routeMiddleware([
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
 $app->register(\Kreait\Laravel\Firebase\ServiceProvider::class);
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 
 /*
@@ -109,7 +110,6 @@ $app->register(\Kreait\Laravel\Firebase\ServiceProvider::class);
 | can respond to, as well as the controllers that may handle them.
 |
 */
-$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
 ], function ($router) {
