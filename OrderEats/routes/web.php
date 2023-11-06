@@ -42,7 +42,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/logout', 'Auth\\LoginController@logout');
     Route::get('/me', 'Auth\\LoginController@userDetails');
     Route::get('/check-login', 'Auth\\LoginController@checkLogin');
-    Route::post('/update-profile', 'Auth\\LoginController@updateProfile');
+    Route::put('/update-profile', 'Auth\\LoginController@updateProfile');
 });
 
 //menus
@@ -58,7 +58,8 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
 });
 
 // gửi thông báo
-Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification');
+Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification1');
+Route::post('/send-web-notification1/{id}', 'FirebaseController@sendNotification');
 
 /*role*/
 $router->get('/role', 'RoleController@index');

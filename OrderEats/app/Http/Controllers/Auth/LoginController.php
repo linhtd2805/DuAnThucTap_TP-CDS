@@ -122,6 +122,7 @@ class LoginController extends Controller
             $user->phone = $request->input('phone');
             $user->longitude = $request->input('longitude');
             $user->latitude = $request->input('latitude');
+            $user->device_token =  $request->token;
 
             if ($request->input('password') != "") {
                 $plainPassword = $request->input('password');

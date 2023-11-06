@@ -38,7 +38,7 @@ class RegisterShipperController extends Controller
             $user = new User();
             $user->username = $request->get('username');
             $user->email = $request->get('email');
-            $user->role_id = 2; //shipper;
+            $user->role_id = 3; //shipper;
             $plainPassword = $request->get('password');
             $user->password = app('hash')->make($plainPassword);
             

@@ -40,7 +40,7 @@ class RegisterController extends Controller
             $user = new User();
             $user->username = $request->get('username');
             $user->email = $request->get('email');
-            $user->role_id = 1; //User;
+            $user->role_id = 2; //User;
             $plainPassword = $request->get('password');
             $user->password = app('hash')->make($plainPassword);
             
