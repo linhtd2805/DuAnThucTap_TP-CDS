@@ -39,6 +39,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/login', 'Auth\\LoginController@login');
     Route::get('/register', 'Auth\\RegisterController@getRegister');
     Route::post('/register', 'Auth\\RegisterController@register');
+    Route::post('/registershipper', 'Auth\\RegistershipperController@register');
     Route::post('/logout', 'Auth\\LoginController@logout');
     Route::get('/me', 'Auth\\LoginController@userDetails');
     Route::get('/check-login', 'Auth\\LoginController@checkLogin');

@@ -14,7 +14,7 @@ class FirebaseController extends Controller
 
         Auth::user()->save();
 
-        return response()->json(['Token successfully stored.']);
+        return response()->json(['Lấy Token FCM thành công.']);
     }
 
     public function sendNotification($id, $title, $body) {
