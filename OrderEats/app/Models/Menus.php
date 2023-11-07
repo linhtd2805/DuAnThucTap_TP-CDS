@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Menus extends Model
 {
-    protected $fillable = ['item_name','description','price'];
+    protected $fillable = ['item_name','description', 'category_id','price'];
 
     protected $table = 'menus';
 
@@ -14,4 +14,8 @@ class Menus extends Model
         return $this->paginate(2); // Phân trang với 10 phần tử trên mỗi trang
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 }

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Menus;
 
 class MenusController extends Controller
-{
+{   
 
     public function index()
     {
@@ -33,6 +33,7 @@ class MenusController extends Controller
         // text data
         $menus->item_name = $request->input('item_name');
         $menus->description = $request->input('description');
+        $menus->category_id = $request->input('category_id');
         $menus->price = $request->input('price');
 
         $menus->save();
@@ -59,7 +60,9 @@ class MenusController extends Controller
         $this->validate($request, [
             'item_name' => 'required',
             'description' => 'required',
+            'category_id' => 'required|integer',
             'price' => 'required'
+            
          ]);
 
         $menus = Menus::find($id);
@@ -69,6 +72,7 @@ class MenusController extends Controller
         // text data
         $menus->item_name = $request->input('item_name');
         $menus->description = $request->input('description');
+        $menus->category_id = $request->input('category_id');
         $menus->price = $request->input('price');
 
         $menus->save();

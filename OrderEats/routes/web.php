@@ -52,6 +52,14 @@ $router->delete('/menus/delete/{id}', 'MenusController@destroy');
 $router->post('/buy', 'ActivityLogController@buy');
 $router->post('/shipper/receive', 'ShipperController@receiveOrder');
 
+$router->group(['middleware' => 'auth'], function () use ($router) {
+     // Route cho admin
+     $router->get('/admin/order-history', 'ActivityLogController@adminIndex');
+
+     // Route cho user
+     $router->get('/user/order-history', 'ActivityLogController@userIndex');
+});
+
 
 
 
