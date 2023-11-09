@@ -11,22 +11,15 @@ use App\Models\ActivityLog;
 
 class ActivityLogController extends Controller
 {
-    public function adminIndex()
+    public function Index()
     {
         // Kiểm tra quyền của người dùng, ví dụ: chỉ cho phép admin truy cập
         if (auth()->user()->isAdmin()) {
             $activity_log = ActivityLog::all();
             return response()->json($activity_log);
         } else {
-            return response()->json(['message' => 'Access denied.'], 403);
-        }
-    }
-    // Lấy lịch sử đơn hàng của người dùng hiện tại
-    public function userIndex()
-    {
-        $user = Auth::user(); // Lấy người dùng đã đăng nhập
-
-        // Kiểm tra xem người dùng có tồn tại không
+            $user = Auth::user(); // Lấy người dùng đã đăng nhập
+             // Kiểm tra xem người dùng có tồn tại không
         if (!$user) {
             return response()->json(['message' => 'Người dùng không tồn tại'], 404);
         }
@@ -36,7 +29,9 @@ class ActivityLogController extends Controller
 
         // Trả về kết quả dưới dạng JSON
         return response()->json($activity_log);
+        }
     }
+    
 
     public function buy(Request $request)
     {

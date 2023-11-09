@@ -54,10 +54,9 @@ $router->post('/shipper/receive', 'ShipperController@receiveOrder');
 
 $router->group(['middleware' => 'auth'], function () use ($router) {
      // Route cho admin
-     $router->get('/admin/order-history', 'ActivityLogController@adminIndex');
+     $router->get('/index/order-history', 'ActivityLogController@Index');
 
-     // Route cho user
-     $router->get('/user/order-history', 'ActivityLogController@userIndex');
+    
 });
 
 
