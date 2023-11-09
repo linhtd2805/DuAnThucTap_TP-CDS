@@ -18,7 +18,7 @@ class CreateMenuesTable extends Migration
             $table->string('item_name');
             $table->text('description');
             $table->decimal('price', 8, 2);
-            $table->integer('quantity')->default(1);
+            $table->integer('quantity');
             $table->unsignedBigInteger('category_id'); // Cột khóa ngoại
              // Tạo quan hệ với bảng categories
             $table->foreign('category_id')->references('id')->on('categories');
