@@ -22,11 +22,11 @@ $router->get('/', function () use ($router) {
 $router->get('/testDB', 'Controller@checkConnection');
 Route::get('/reviews', 'ReviewController@index');
 Route::get('/reviews/{id}', 'ReviewController@show');
-Route::put('/reviews/{id}', 'ReviewController@update');
-Route::delete('/reviews/{id}', 'ReviewController@destroy');
+//Route::put('/reviews/{id}', 'ReviewController@update');
+//Route::delete('/reviews/{id}', 'ReviewController@destroy');
 Route::get('/reviews/search/{keyword}', 'ReviewController@search');
-Route::put('/reviews/softDelete/{id}', 'ReviewController@softDelete');
-Route::put('/reviews/reverse/{id}', 'ReviewController@reverse');
+//Route::put('/reviews/softDelete/{id}', 'ReviewController@softDelete');
+//Route::put('/reviews/reverse/{id}', 'ReviewController@reverse');
 
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get('/protected', function () {

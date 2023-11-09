@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Reviews;
 use App\Models\Orders;
+use App\Models\ForbiddenWord;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,13 +28,26 @@ class ReviewController extends Controller
         return response()->json($reviews);
     }
 
-    // Thêm 
     public function store(Request $request)
-    {   
+    {
         try {
             // Xác thực inputs
             if (($errors = $this->doValidate($request)) && count($errors) > 0) {
                 return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
+            }
+
+            // Kiểm tra từ ngữ cấm trong đánh giá
+            $review = $request->get('comment');
+            $forbiddenWords = ForbiddenWord::pluck('word')->toArray();
+            $reviewWords = preg_split('/\s+/', $review);
+
+            $vietnameseForbiddenWords = $this->getForbiddenWords();
+
+            // Kiểm tra từ ngữ cấm tiếng Việt trong đánh giá
+            foreach ($vietnameseForbiddenWords as $forbiddenWord) {
+                if (stripos($review, $forbiddenWord) !== false) {
+                    return response()->json(['message' => 'Đánh giá chứa từ ngữ không được phép.'], 400);
+                }
             }
 
             $user = auth()->user();
@@ -45,7 +59,7 @@ class ReviewController extends Controller
                 $reviews = new Reviews();
                 $reviews->order_id = $request->get("order_id");
                 $reviews->rating = $request->get('rating');
-                $reviews->comment = $request->get('comment');
+                $reviews->comment = $review; // Lưu lại đánh giá mà không chứa từ ngữ cấm
                 $reviews->date = date('Y-m-d', time());
 
                 $reviews->save();
@@ -54,8 +68,14 @@ class ReviewController extends Controller
                 return response()->json(['message' => 'Đơn hàng không hợp lệ hoặc chưa được giao, không thể thêm đánh giá!'], 400);
             }
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Thêm Đánh giá thất bại !'], 400); 
-        }    
+            return response()->json(['message' => 'Thêm Đánh giá thất bại !'], 400);
+        }
+    }
+
+    private function getForbiddenWords()
+    {
+        // Lấy danh sách từ ngữ cấm tiếng Việt từ cơ sở dữ liệu
+        return ForbiddenWord::pluck('word')->toArray();
     }
 
     // Cập Nhật
@@ -175,4 +195,5 @@ class ReviewController extends Controller
     
         return [];
     }
+
 }
