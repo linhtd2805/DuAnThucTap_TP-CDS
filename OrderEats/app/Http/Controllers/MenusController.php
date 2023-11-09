@@ -12,14 +12,14 @@ class MenusController extends Controller
     {
         // Kiểm tra xem người dùng đã đăng nhập không
         if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Không được phép truy cập'], 401);
         }
 
         $user = auth()->user();
 
         // Kiểm tra quyền của người dùng, chỉ cho phép admin truy cập
         if (!$user->isAdmin()) {
-            return response()->json(['message' => 'Permission denied'], 403);
+            return response()->json(['message' => 'Quyền truy cập bị từ chối'], 403);
         }
         // Get All products
         // get All Products From Database
@@ -34,14 +34,14 @@ class MenusController extends Controller
     {
         // Kiểm tra xem người dùng đã đăng nhập không
         if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Không được phép truy cập'], 401);
         }
 
         $user = auth()->user();
 
         // Kiểm tra quyền của người dùng, chỉ cho phép admin truy cập
         if (!$user->isAdmin()) {
-            return response()->json(['message' => 'Permission denied'], 403);
+            return response()->json(['message' => 'Quyền truy cập bị từ chối'], 403);
         }
         //POST(request)
         // Store all information of Products to Database
@@ -55,7 +55,21 @@ class MenusController extends Controller
             'category_id' => 'required|integer',
             'price' => 'required|numeric|min:0.01|max:9999999.99',
             'quantity' => 'required|numeric|integer|min:1|max:100'
-         ]);
+        ],[
+            'item_name.required' => 'Vui lòng nhập tên sản phẩm.',
+            'description.required' => 'Vui lòng nhập mô tả sản phẩm.',
+            'category_id.required' => 'Vui lòng chọn danh mục.',
+            'category_id.integer' => 'Danh mục không hợp lệ.',
+            'price.required' => 'Vui lòng nhập giá sản phẩm.',
+            'price.numeric' => 'Giá sản phẩm phải là số.',
+            'price.min' => 'Giá sản phẩm không được nhỏ hơn 0.01.',
+            'price.max' => 'Giá sản phẩm không được lớn hơn 9999999.99.',
+            'quantity.required' => 'Vui lòng nhập số lượng sản phẩm.',
+            'quantity.numeric' => 'Số lượng phải là số nguyên.',
+            'quantity.integer' => 'Số lượng phải là số nguyên.',
+            'quantity.min' => 'Số lượng sản phẩm không được nhỏ hơn 1.',
+            'quantity.max' => 'Số lượng sản phẩm không được lớn hơn 100.'
+        ]);
 
 
         // text data
@@ -75,14 +89,14 @@ class MenusController extends Controller
     {   
         // Kiểm tra xem người dùng đã đăng nhập không
         if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Không được phép truy cập'], 401);
         }
 
         $user = auth()->user();
 
         // Kiểm tra quyền của người dùng, chỉ cho phép admin truy cập
         if (!$user->isAdmin()) {
-            return response()->json(['message' => 'Permission denied'], 403);
+            return response()->json(['message' => 'Quyền truy cập bị từ chối'], 403);
         }
         // GET(id)
         // show each product by its ID from database
@@ -95,14 +109,14 @@ class MenusController extends Controller
     {   
         // Kiểm tra xem người dùng đã đăng nhập không
         if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Không được phép truy cập'], 401);
         }
 
         $user = auth()->user();
 
         // Kiểm tra quyền của người dùng, chỉ cho phép admin truy cập
         if (!$user->isAdmin()) {
-            return response()->json(['message' => 'Permission denied'], 403);
+            return response()->json(['message' => 'Quyền truy cập bị từ chối'], 403);
         }
         // PUT(id)
         // Update Info by Id
@@ -113,7 +127,21 @@ class MenusController extends Controller
             'category_id' => 'required|integer',
             'price' => 'required|numeric|min:0.01|max:9999999.99',
             'quantity' => 'required|numeric|integer|min:1|max:100'
-         ]);
+         ],[
+            'item_name.required' => 'Vui lòng nhập tên sản phẩm.',
+            'description.required' => 'Vui lòng nhập mô tả sản phẩm.',
+            'category_id.required' => 'Vui lòng chọn danh mục.',
+            'category_id.integer' => 'Danh mục không hợp lệ.',
+            'price.required' => 'Vui lòng nhập giá sản phẩm.',
+            'price.numeric' => 'Giá sản phẩm phải là số.',
+            'price.min' => 'Giá sản phẩm không được nhỏ hơn 0.01.',
+            'price.max' => 'Giá sản phẩm không được lớn hơn 9999999.99.',
+            'quantity.required' => 'Vui lòng nhập số lượng sản phẩm.',
+            'quantity.numeric' => 'Số lượng phải là số nguyên.',
+            'quantity.integer' => 'Số lượng phải là số nguyên.',
+            'quantity.min' => 'Số lượng sản phẩm không được nhỏ hơn 1.',
+            'quantity.max' => 'Số lượng sản phẩm không được lớn hơn 100.'
+        ]);
 
         $menus = Menus::find($id);
 
@@ -135,20 +163,20 @@ class MenusController extends Controller
     {
         // Kiểm tra xem người dùng đã đăng nhập không
         if (!auth()->check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Không được phép truy cập'], 401);
         }
 
         $user = auth()->user();
 
         // Kiểm tra quyền của người dùng, chỉ cho phép admin truy cập
         if (!$user->isAdmin()) {
-            return response()->json(['message' => 'Permission denied'], 403);
+            return response()->json(['message' => 'Quyền truy cập bị từ chối'], 403);
         }
         // DELETE(id)
         // Delete by Id
         $menus = Menus::find($id);
         $menus->delete();
-        return response()->json('Item_Menu Deleted Successfully');
+        return response()->json('Món đã được xóa khỏi menu!');
 
     }
 }
