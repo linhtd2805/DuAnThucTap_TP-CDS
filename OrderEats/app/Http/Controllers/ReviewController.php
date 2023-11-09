@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Reviews;
 use App\Models\Orders;
 use App\Models\User;
+use App\Models\BlackList;
 use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
@@ -29,24 +30,65 @@ class ReviewController extends Controller
 
     // Thêm 
     public function store(Request $request)
-    {   
+    {
         try {
             // Xác thực inputs
-            if (($errors = $this->doValidate($request)) && count($errors) > 0) {
-                return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
+            $validator = Validator::make($request->all(), [
+                'order_id' => 'required|exists:orders,id',
+                'rating' => 'required|integer|between:1,5',
+                'comment' => 'required|string|max:255',
+            ], [
+                'order_id.required' => 'Chưa nhập đơn hàng.',
+                'order_id.exists' => 'Trường đơn hàng không tồn tại.',
+                'rating.required' => 'Chưa nhập đánh giá.',
+                'rating.integer' => 'Trường đánh giá phải là số nguyên.',
+                'rating.between' => 'Trường đánh giá phải nằm trong khoảng từ 1 đến 5.',
+                'comment.required' => 'Chưa nhập bình luận.',
+                'comment.string' => 'Trường bình luận phải là một chuỗi.',
+                'comment.max' => 'Trường bình luận không được vượt quá 255 kí tự.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => 'Dữ liệu không hợp lệ', 'errors' => $validator->errors()], 400);
             }
 
             $user = auth()->user();
+            $orderID = $request->get("order_id");
+
+            // Kiểm tra xem người dùng đã thêm đánh giá cho đơn hàng này chưa
+            $existingReview = Reviews::where('order_id', $orderID)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($existingReview) {
+                return response()->json(['message' => 'Bạn đã thêm đánh giá cho đơn hàng này rồi.'], 400);
+            }
+
+            // Kiểm tra xem đơn hàng của user và trạng thái đã giao chưa
             $deliveredOrders = Orders::where('user_id', $user->id)
                 ->where('order_status', 'Đã giao')
                 ->pluck('id');
 
-            if ($deliveredOrders->contains($request->get("order_id"))) {
+            if ($deliveredOrders->contains($orderID)) {
+                // Kiểm tra comment không chứa từ nào trong danh sách BlackList
+                $comment = $request->get('comment');
+                $blackListWords = BlackList::pluck('word')->toArray();
+                $commentLower = strtolower($comment);
+                $commentWords = str_word_count($commentLower, 1);
+                $blackListWordsLower = array_map('strtolower', $blackListWords);
+                $intersection = array_intersect($commentWords, $blackListWordsLower);
+
+                if (!empty($intersection)) {
+                    return response()->json(['message' => 'Comment chứa từ nhạy cảm: ' . implode(', ', $intersection)], 400);
+                }
+
+                // Nếu comment không chứa từ nhạy cảm và tất cả dữ liệu hợp lệ, thì lưu đánh giá
                 $reviews = new Reviews();
-                $reviews->order_id = $request->get("order_id");
+                $reviews->order_id = $orderID;
                 $reviews->rating = $request->get('rating');
-                $reviews->comment = $request->get('comment');
+                $reviews->comment = $comment;
                 $reviews->date = date('Y-m-d', time());
+                $reviews->user_id = $user->id;
 
                 $reviews->save();
                 return response()->json(['message' => 'Thêm Đánh giá thành công !', 'Đánh Giá:' => $reviews]);
@@ -54,8 +96,8 @@ class ReviewController extends Controller
                 return response()->json(['message' => 'Đơn hàng không hợp lệ hoặc chưa được giao, không thể thêm đánh giá!'], 400);
             }
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Thêm Đánh giá thất bại !'], 400); 
-        }    
+            return response()->json(['message' => 'Thêm Đánh giá thất bại !', 'error' => $e->getMessage()], 400);
+        }
     }
 
     // Cập Nhật
@@ -63,19 +105,46 @@ class ReviewController extends Controller
     {   
         try {
             // Xác thực inputs
-            if (($errors = $this->doUpdateValidation($request)) && count($errors) > 0) {
-                return response()->json(['message' => 'Không bỏ trống !', 'errors' => $errors], 500);
+            $validator = Validator::make($request->all(), [
+                'rating' => 'integer|between:1,5',
+                'comment' => 'string|max:255',
+            ], [
+                'rating.integer' => 'Trường đánh giá phải là số nguyên.',
+                'rating.between' => 'Trường đánh giá phải nằm trong khoảng từ 1 đến 5.',
+                'comment.string' => 'Trường bình luận phải là một chuỗi.',
+                'comment.max' => 'Trường bình luận không được vượt quá 255 kí tự.',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => 'Dữ liệu không hợp lệ', 'errors' => $validator->errors()], 400);
             }
+
             // Sửa vào CSDL theo id
             $reviews = Reviews::find($id);
             if (!$reviews) {
                 return response()->json(['message' => 'Không tìm thấy đánh giá'], 404);
-            }else{
-                $reviews-> rating = $request->get('rating');
-                $reviews-> comment = $request->get('comment');
-                $reviews-> date = date('Y-m-d', time());
-                $reviews->save();
             }
+
+            // Kiểm tra nếu rating hoặc comment là chuỗi trắng, trả về lỗi
+            if ($request->has('rating') && trim($request->input('rating')) === '') {
+                return response()->json(['message' => 'Trường đánh giá không được để trống'], 400);
+            }
+
+            if ($request->has('comment') && trim($request->input('comment')) === '') {
+                return response()->json(['message' => 'Trường bình luận không được để trống'], 400);
+            }
+
+            // Chỉ cập nhật các trường dữ liệu đã được gửi lên
+            if ($request->has('rating')) {
+                $reviews->rating = $request->input('rating');
+            }
+
+            if ($request->has('comment')) {
+                $reviews->comment = $request->input('comment');
+            }
+
+            $reviews->save();
+
             return response()->json(['message' => 'Cập nhật thành công !']); 
         } catch (\Exception $e) {
             return response()->json(['message' => 'Cập nhật thất bại !'], 409); 
@@ -143,22 +212,6 @@ class ReviewController extends Controller
         return response()->json([
             'message' => 'Reverse successfully !',
         ], 200);
-    }
-
-    public function doValidate($request) {
-        $data = [
-            "order_id" => "required",
-            "rating" => "required|numeric|max:5|min:1",
-            "comment" => "required|string",
-        ];
-
-        $validator = Validator::make($request->all(), $data);
-
-        if ($validator->fails()) {
-            return $validator->errors();
-        }
-
-        return [];
     }
 
     protected function doUpdateValidation($request) {
