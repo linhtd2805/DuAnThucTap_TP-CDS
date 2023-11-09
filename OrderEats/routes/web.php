@@ -46,12 +46,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::put('/update-profile', 'Auth\\LoginController@updateProfile');
 });
 
-//menus
-$router->get('/menus', 'MenusController@index');
-$router->get('/menus/{id}', 'MenusController@show');
-$router->post('/menus/create', 'MenusController@store');
-$router->post('/menus/update/{id}', 'MenusController@update');
-$router->delete('/menus/delete/{id}', 'MenusController@destroy');
+$router->group(['middleware' => 'auth'], function () use ($router) {
+    $router->get('/menus', 'MenusController@index');
+    $router->get('/menus/{id}', 'MenusController@show');
+    $router->post('/menus/create', 'MenusController@store');
+    $router->post('/menus/update/{id}', 'MenusController@update');
+    $router->delete('/menus/delete/{id}', 'MenusController@destroy');
+});
 
 Route::group(['middleware' => 'auth'], function () use ($router) {
     Route::post('/store-token', 'FirebaseController@updateDeviceToken');
@@ -61,6 +62,13 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
 // gửi thông báo
 Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification1');
 Route::post('/send-web-notification1/{id}', 'FirebaseController@sendNotification');
+$router->group(['middleware' => 'auth'], function () use ($router) {
+     // Route cho admin
+     $router->get('/index/order-history', 'ActivityLogController@Index');
+
+    
+});
+
 
 /*role*/
 $router->get('/role', 'RoleController@index');
