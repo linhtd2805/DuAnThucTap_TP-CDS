@@ -27,6 +27,55 @@ class UserController extends Controller
   }
 
 
+  // public function update(Request $request, $id)
+  // {
+  //   // Tìm người dùng trong database
+  //   $user = User::find($id);
+
+  //   // Kiểm tra nếu người dùng không tồn tại
+  //   if (!$user) {
+  //     return response()->json(['error' => 'Không tìm thấy người dùng'], 404);
+  //   }
+
+  //   // Validate dữ liệu được gửi lên
+  //   $validator = Validator::make($request->all(), [
+  //     'username' => 'sometimes|required|string|max:255',
+  //     'password' => 'sometimes|required|string|min:6',
+  //     'fullname' => 'sometimes|required|string|max:255',
+  //     'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id,
+  //     // mỗi id chỉ duy nhất 1 email
+  //     'phone' => 'sometimes|required|regex:/^[0-9]{10}$/|unique:users,phone,' . $id,
+  //     // mỗi id chỉ có 1 sdt
+  //     'role_id' => 'sometimes|required|integer',
+  //     'latitude' => 'sometimes|required|numeric',
+  //     'longitude' => 'sometimes|required|numeric',
+  //   ]);
+
+  //   // Nếu validation fails, trả về lỗi
+  //   if ($validator->fails()) {
+  //     return response()->json(['error' => $validator->errors()], 400);
+  //   }
+
+  //   // Cập nhật chỉ những trường dữ liệu được gửi lên
+  //   $user->fill($request->only([
+  //     'username',
+  //     'password',
+  //     'fullname',
+  //     'email',
+  //     'phone',
+  //     'role_id',
+  //     'latitude',
+  //     'longitude'
+  //   ]));
+
+  //   // Lưu thay đổi vào database
+  //   $user->save();
+
+  //   // Trả về thông báo thành công
+  //   return response()->json(['success' => 'Cập nhật người dùng thành công', 'user' => $user]);
+  // }
+
+
   public function update(Request $request, $id)
   {
     // Tìm người dùng trong database
@@ -37,16 +86,26 @@ class UserController extends Controller
       return response()->json(['error' => 'Không tìm thấy người dùng'], 404);
     }
 
+    // Kiểm tra role_id của người dùng đăng nhập
+    $loggedInUserRoleID = auth()->user()->username;
+
+    // Kiểm tra xem người dùng đăng nhập có quyền cập nhật thông tin người dùng khác không
+    if ($loggedInUserRoleID !== $user->username) {
+      return response()->json(['error' => 'Bạn không có quyền cập nhật thông tin người dùng này'], 403);
+    }
+
+    // Kiểm tra xem các trường dữ liệu được gửi lên có rỗng không
+    if (empty($request->all())) {
+      return response()->json(['error' => 'Không được để trống'], 400);
+    }
+
     // Validate dữ liệu được gửi lên
     $validator = Validator::make($request->all(), [
       'username' => 'sometimes|required|string|max:255',
       'password' => 'sometimes|required|string|min:6',
       'fullname' => 'sometimes|required|string|max:255',
       'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id,
-      // mỗi id chỉ duy nhất 1 email
       'phone' => 'sometimes|required|regex:/^[0-9]{10}$/|unique:users,phone,' . $id,
-      // mỗi id chỉ có 1 sdt
-      'role_id' => 'sometimes|required|integer',
       'latitude' => 'sometimes|required|numeric',
       'longitude' => 'sometimes|required|numeric',
     ]);
@@ -63,7 +122,6 @@ class UserController extends Controller
       'fullname',
       'email',
       'phone',
-      'role_id',
       'latitude',
       'longitude'
     ]));
@@ -74,6 +132,9 @@ class UserController extends Controller
     // Trả về thông báo thành công
     return response()->json(['success' => 'Cập nhật người dùng thành công', 'user' => $user]);
   }
+
+
+
   // Tìm kiếm theo data
   public function search($keyword)
   {

@@ -94,5 +94,3 @@ $router->delete('/orders/{id}', 'OrdersController@delete');
 $router->get('/shipper', 'ShipperCheckOrderController@index');
 $router->get('/shipper/{id}', 'ShipperCheckOrderController@show');
 $router->put('/shipper/{id}', 'ShipperCheckOrderController@update');
-
-
