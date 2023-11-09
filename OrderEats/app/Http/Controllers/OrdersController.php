@@ -19,7 +19,7 @@ class OrdersController extends Controller
 
         $user = auth()->user();
 
-        if ($user->roles->name_role =='SHIPPER') {
+        if (strtolower($user->roles->name_role) == 'shipper') {
             return response()->json(['error' => 'Người dùng có vai trò shipper không thể thực hiện hành động này'], 403);
         }
 

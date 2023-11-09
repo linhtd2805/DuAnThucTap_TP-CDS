@@ -36,9 +36,9 @@ class LoginController extends Controller
 
             $token = $this->jwt->attempt($request->only('username', 'password'));
             // return response()->json($token, 500);
-
+            
             if (!$token) {
-                return response()->json(['success' => 0, 'message' => 'Không tìm thấy User!'], 404);
+                return response()->json(['success' => 0, 'message' => 'Sai tài khoản hoặc mật khẩu!'], 404);
             }
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
 
@@ -122,6 +122,7 @@ class LoginController extends Controller
             $user->phone = $request->input('phone');
             $user->longitude = $request->input('longitude');
             $user->latitude = $request->input('latitude');
+            $user->device_token =  $request->token;
 
             if ($request->input('password') != "") {
                 $plainPassword = $request->input('password');

@@ -4,11 +4,35 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Menus;
 use App\Models\Orders;
+use App\Models\ActivityLog;
 
 class ActivityLogController extends Controller
 {
+    public function Index()
+    {
+        // Kiểm tra quyền của người dùng, ví dụ: chỉ cho phép admin truy cập
+        if (auth()->user()->isAdmin()) {
+            $activity_log = ActivityLog::all();
+            return response()->json($activity_log);
+        } else {
+            $user = Auth::user(); // Lấy người dùng đã đăng nhập
+             // Kiểm tra xem người dùng có tồn tại không
+        if (!$user) {
+            return response()->json(['message' => 'Người dùng không tồn tại'], 404);
+        }
+
+        // Lấy lịch sử đơn hàng của người dùng
+        $activity_log = ActivityLog::where('user_id', $user->id)->get();
+
+        // Trả về kết quả dưới dạng JSON
+        return response()->json($activity_log);
+        }
+    }
+    
+
     public function buy(Request $request)
     {
         // Đọc thông tin sản phẩm và số lượng từ request
