@@ -20,7 +20,7 @@ class Orders extends Migration
             $table->unsignedBigInteger('menu_id');
             $table->integer('quantity');
             $table->decimal('total_price', 8, 2);
-            $table->enum('order_status', ['Đang xử lý', 'Đã giao', 'Hủy bỏ', 'Đang giao']);
+            $table->enum('order_status', ['Đang xử lý', 'Đã giao', 'Hủy bỏ', 'Đang giao','Đã xác nhận']);
             $table->timestamps();
     
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
