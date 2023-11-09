@@ -91,6 +91,9 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
 //index
 //$router->get('/calculateDistance', 'ApiController@calculateDistance');
 
+//index
+//$router->get('/calculateDistance', 'ApiController@calculateDistance');
+
 //Maps
 $router->post('/calculate-distance', 'ApiController@calculateDistance');
 //order

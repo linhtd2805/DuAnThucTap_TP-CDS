@@ -99,20 +99,37 @@ class UserController extends Controller
       return response()->json(['error' => 'Không được để trống'], 400);
     }
 
-    // Validate dữ liệu được gửi lên
+    // Define custom error messages in Vietnamese
+    $customMessages = [
+      'required' => 'Trường :attribute là bắt buộc.',
+      'string' => 'Trường :attribute phải là chuỗi ký tự.',
+      'max' => [
+        'string' => 'Trường :attribute không được vượt quá :max ký tự.',
+      ],
+      'min' => [
+        'string' => 'Trường :attribute phải có ít nhất :min ký tự.',
+      ],
+      'email' => 'Trường :attribute phải là địa chỉ email hợp lệ.',
+      'unique' => 'Trường :attribute đã được sử dụng.',
+      // 'regex' => 'Trường :attribute không đúng định dạng.',
+      'phone.regex' => 'Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại di động Việt Nam đúng định dạng.',
+      'numeric' => 'Trường :attribute phải là số.',
+    ];
+
+    // Validate dữ liệu được gửi lên sử dụng ngôn ngữ tiếng Việt
     $validator = Validator::make($request->all(), [
       'username' => 'sometimes|required|string|max:255',
       'password' => 'sometimes|required|string|min:6',
       'fullname' => 'sometimes|required|string|max:255',
       'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id,
-      'phone' => 'sometimes|required|regex:/^[0-9]{10}$/|unique:users,phone,' . $id,
+      'phone' => ['sometimes', 'required', 'regex:/^((09|03|07|08|05)+([0-9]{8})\b)$/'],
       'latitude' => 'sometimes|required|numeric',
       'longitude' => 'sometimes|required|numeric',
-    ]);
+    ], $customMessages);
 
-    // Nếu validation fails, trả về lỗi
+    // Nếu validation fails, trả về thông báo lỗi tiếng Việt
     if ($validator->fails()) {
-      return response()->json(['error' => $validator->errors()], 400);
+      return response()->json(['message' => 'Dữ liệu không hợp lệ', 'errors' => $validator->errors()], 400);
     }
 
     // Cập nhật chỉ những trường dữ liệu được gửi lên
