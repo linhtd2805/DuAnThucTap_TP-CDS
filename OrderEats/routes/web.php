@@ -83,6 +83,10 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
 
 //Maps
 $router->post('/calculate-distance', 'ApiController@calculateDistance');
+
+$router->get('/nearest-shipper', 'ApiController@getNearestShipper');
+
+
 //order
 $router->get('/orders', 'OrdersController@index');
 $router->get('/orders/{id}', 'OrdersController@show');
