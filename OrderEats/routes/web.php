@@ -42,12 +42,13 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     Route::post('/update-profile', 'Auth\\LoginController@updateProfile');   
 });
 
-
-$router->get('/menus', 'MenusController@index');
-$router->get('/menus/{id}', 'MenusController@show');
-$router->post('/menus/create', 'MenusController@store');
-$router->post('/menus/update/{id}', 'MenusController@update');
-$router->delete('/menus/delete/{id}', 'MenusController@destroy');
+$router->group(['middleware' => 'auth'], function () use ($router) {
+    $router->get('/menus', 'MenusController@index');
+    $router->get('/menus/{id}', 'MenusController@show');
+    $router->post('/menus/create', 'MenusController@store');
+    $router->post('/menus/update/{id}', 'MenusController@update');
+    $router->delete('/menus/delete/{id}', 'MenusController@destroy');
+});
 
 $router->post('/buy', 'ActivityLogController@buy');
 $router->post('/shipper/receive', 'ShipperController@receiveOrder');
