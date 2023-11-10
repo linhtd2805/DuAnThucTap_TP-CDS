@@ -48,6 +48,7 @@ class RegisterController extends Controller
             $user->phone="";
             $user->latitude=0;
             $user->longitude=0;
+            $user->is_shipper=true;
 
             // Lấy FCM token từ yêu cầu đăng ký
             $fcmToken = $request->get('fcm_token');

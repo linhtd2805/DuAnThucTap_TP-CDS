@@ -104,6 +104,11 @@ $router->post('/orders', 'OrdersController@create');
 $router->delete('/orders/{id}', 'OrdersController@delete');
 
 //shipper
-$router->get('/shipper', 'ShipperCheckOrderController@index');
-$router->get('/shipper/{id}', 'ShipperCheckOrderController@show');
-$router->put('/shipper/{id}', 'ShipperCheckOrderController@update');
+Route::get('/shipper', 'ShipperCheckOrderController@index');
+Route::get('/shipper/{id}', 'ShipperCheckOrderController@show');
+Route::put('/shipper/{id}', 'ShipperCheckOrderController@update');
+
+Route::put('/confirmed/{id}', 'Auth\\RegistershipperController@confirmShipper'); 
+Route::put('/unconfirmed/{id}', 'Auth\\RegistershipperController@unconfirmShipper');
+Route::get('/confirmed', 'Auth\\RegistershipperController@getConfirmedShippers');
+Route::get('/unconfirmed', 'Auth\\RegistershipperController@getUnconfirmedShippers');

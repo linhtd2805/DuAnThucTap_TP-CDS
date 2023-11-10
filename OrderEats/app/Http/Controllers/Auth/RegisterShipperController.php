@@ -65,4 +65,72 @@ class RegisterShipperController extends Controller
             return response()->json(['success' => 0, 'message' => 'Đăng Ký thất bại!'], 409);
         }
     }
+
+    public function getConfirmedShippers()
+    {
+        // Lấy tất cả các tài khoản shipper đã được xác nhận (is_shipper = true)
+        $shippers = User::where('role_id', 3)->where('is_shipper', true)->paginate(3);
+        return response()->json(['Danh sách shipper hiện tại:' => $shippers], 200);
+    }
+
+    public function getUnconfirmedShippers()
+    {
+        // Lấy tất cả các tài khoản shipper đã được xác nhận (is_shipper = false)
+        $shippers = User::where('role_id', 3)->where('is_shipper', false)->paginate(3);
+        return response()->json(['Danh sách shipper chưa được xác nhận' => $shippers], 200);
+    }
+
+    // Admin xác nhận thành shipper
+    public function confirmShipper($id)
+    {
+        if (empty($id)) {
+            return response()->json(['message' => 'Chưa chọn tài khoản'], 400);
+        }
+
+        $shipper = User::where('id', $id)
+                        ->where('role_id', 3)
+                        ->first();
+
+        if ($shipper) {
+            if ($shipper->is_shipper) {
+                return response()->json(['message' => 'Tài khoản này đã được xác nhận là shipper.'], 400);
+            }
+
+            $shipper->is_shipper = true;
+            $shipper->save();
+
+            return response()->json(['message' => 'Tài khoản shipper đã được xác nhận.', 'Thông tin:' => $shipper], 200);
+        } else {
+            return response()->json(['message' => 'Không tìm thấy tài khoản shipper, nhập lại.'], 404);
+        }
+    }
+
+    // Admin bỏ xác nhận thành shipper
+    public function unconfirmShipper($id)
+    {
+        if (empty($id)) {
+            return response()->json(['message' => 'Chưa chọn tài khoản'], 400);
+        }
+
+        $shipper = User::where('id', $id)
+                        ->where('role_id', 3)
+                        ->first();
+
+        if ($shipper) {
+            if ($shipper->is_shipper) {
+                $shipper->is_shipper = false;
+                $shipper->save();
+                return response()->json(['message' => 'Tài khoản shipper sẽ dừng hoạt động.', 'Thông tin:' => $shipper], 200);
+            }
+            
+            return response()->json(['message' => 'Tài khoản này đã không dừng hoạt động, không thể thực hiện nữa.'], 400);
+        } else {
+            return response()->json(['message' => 'Không tìm thấy tài khoản shipper, nhập lại.'], 404);
+        }
+    }
+
+
+
+
+
 }

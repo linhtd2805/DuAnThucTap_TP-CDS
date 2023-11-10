@@ -23,6 +23,7 @@ class User extends Migration
             $table->unsignedBigInteger('role_id');
             $table->double('latitude');
             $table->double('longitude');
+            $table->boolean('is_shipper')->default(false);
             $table->timestamps();
 
             $table->string('device_token')->nullable();
