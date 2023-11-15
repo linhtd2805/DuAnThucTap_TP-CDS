@@ -63,10 +63,10 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
 Route::post('/send-web-notification/{id}', 'FirebaseController@sendNotification1');
 Route::post('/send-web-notification1/{id}', 'FirebaseController@sendNotification');
 $router->group(['middleware' => 'auth'], function () use ($router) {
-     // Route cho admin
-     $router->get('/index/order-history', 'ActivityLogController@Index');
+    // Route cho admin
+    $router->get('/index/order-history', 'ActivityLogController@Index');
 
-    
+
 });
 
 
@@ -83,10 +83,10 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
     $router->get('/user/{id}', 'UserController@show');
     $router->put('/user/{id}', 'UserController@update');
     $router->get('/user/search/{keyword}', 'UserController@search');
-    
+
     // $router->delete('/user/{id}', 'UserController@destroy');
-    
-//
+
+    //
 });
 //index
 //$router->get('/calculateDistance', 'ApiController@calculateDistance');
@@ -96,6 +96,9 @@ Route::group(['middleware' => 'auth'], function () use ($router) {
 
 //Maps
 $router->post('/calculate-distance', 'ApiController@calculateDistance');
+
+
+
 //order
 $router->get('/orders', 'OrdersController@index');
 $router->get('/orders/{id}', 'OrdersController@show');
@@ -108,7 +111,7 @@ Route::get('/shipper', 'ShipperCheckOrderController@index');
 Route::get('/shipper/{id}', 'ShipperCheckOrderController@show');
 Route::put('/shipper/{id}', 'ShipperCheckOrderController@update');
 
-Route::put('/confirmed/{id}', 'Auth\\RegistershipperController@confirmShipper'); 
+Route::put('/confirmed/{id}', 'Auth\\RegistershipperController@confirmShipper');
 Route::put('/unconfirmed/{id}', 'Auth\\RegistershipperController@unconfirmShipper');
 Route::get('/confirmed', 'Auth\\RegistershipperController@getConfirmedShippers');
 Route::get('/unconfirmed', 'Auth\\RegistershipperController@getUnconfirmedShippers');

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class ApiController extends Controller
 {
@@ -18,42 +19,56 @@ class ApiController extends Controller
     // $lat2 = 10.019305;
     // $lon2 = 105.7697338;
 
-    public function calculateDistance(Request $request)
+    public function calculateDistance()
     {
-        // Kiểm tra xem các giá trị lat1, lon1, lat2, lon2 có tồn tại trong yêu cầu không
-        if (!$request->has(['lat1', 'lon1', 'lat2', 'lon2'])) {
-            return response()->json(['error' => 'Thiếu thông tin tọa độ.'], 400);
+        // Giá trị cố định cho lat1 và lon1
+        $lat1 = 10.019299; // Thay bằng giá trị latitude mong muốn
+        $lon1 = 105.7697339; // Thay bằng giá trị longitude mong muốn
+
+        // Lấy danh sách các User có role là 'shipper' từ Model User
+        $shippers = User::where('role_id', 3)
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get(['id', 'latitude', 'longitude']);
+
+        // Nếu không có User nào có role là 'shipper', trả về thông báo lỗi
+        if ($shippers->isEmpty()) {
+            return response()->json(['error' => 'Không có thông tin Shipper.'], 400);
         }
 
-        // Lấy giá trị lat1, lon1, lat2, lon2 từ yêu cầu
-        $lat1 = $request->input('lat1');
-        $lon1 = $request->input('lon1');
-        $lat2 = $request->input('lat2');
-        $lon2 = $request->input('lon2');
+        $minDistance = PHP_INT_MAX; // Khởi tạo khoảng cách nhỏ nhất là giá trị lớn nhất có thể
+        $closestShipperId = null;
 
-        // Kiểm tra xem các giá trị lat1, lon1, lat2, lon2 có đúng định dạng số không
-        if (!is_numeric($lat1) || !is_numeric($lon1) || !is_numeric($lat2) || !is_numeric($lon2)) {
-            return response()->json(['error' => 'Các giá trị tọa độ không hợp lệ.'], 400);
+        foreach ($shippers as $shipper) {
+            // Tính khoảng cách giữa lat1, lon1 và vị trí của từng User có role là 'shipper'
+            $distance = $this->calcDistance($lat1, $lon1, $shipper->latitude, $shipper->longitude);
+
+            // Cập nhật khoảng cách nhỏ nhất và ID của User (Shipper) gần nhất
+            if ($distance < $minDistance) {
+                $minDistance = $distance;
+                $closestShipperId = $shipper->id;
+            }
         }
 
-        // Tính khoảng cách
-        $distance = $this->calcDistance($lat1, $lon1, $lat2, $lon2);
-
-        // Kiểm tra xem tính toán khoảng cách có thành công không
-        if ($distance === false) {
-            return response()->json(['error' => 'Không thể tính khoảng cách.'], 500);
-        }
+        // Tìm thông tin chi tiết của Shipper gần nhất
+        $closestShipper = User::find($closestShipperId);
 
         // Xử lý khoảng cách và trả về kết quả
-        if ($distance < 1) {
+        if ($minDistance < 1) {
             // Chuyển đổi khoảng cách thành mét nếu dưới 1 km
-            $distanceInMeters = $distance * 1000;
-            return response()->json(['Khoảng cách giữa shipper và khách hàng là: ' => round($distanceInMeters) . ' m']);
+            $distanceInMeters = $minDistance * 1000;
+            return response()->json([
+                'Khoảng cách gần nhất của Shipper (ID: ' . $closestShipper->id . ') đến vị trí cửa hàng là: ' => round($distanceInMeters) . ' m'
+            ]);
         } else {
-            return response()->json(['Khoảng cách giữa shipper và khách hàng là: ' => round($distance, 2) . ' km']);
+            return response()->json([
+                'Khoảng cách gần nhất của Shipper (ID: ' . $closestShipper->id . ') đến vị trí cửa hàng là: ' => round($minDistance, 2) . ' km'
+            ]);
         }
     }
 
+    // Hàm tính khoảng cách giữa hai điểm trên trái đất
+    // Hàm tính khoảng cách giữa hai điểm trên trái đất
     private function calcDistance($lat1, $lon1, $lat2, $lon2)
     {
         $earthRadius = 6371; // Bán kính trái đất trong đơn vị kilômét
@@ -68,5 +83,6 @@ class ApiController extends Controller
 
         return $distance;
     }
+
 
 }
