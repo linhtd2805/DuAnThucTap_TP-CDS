@@ -22,7 +22,9 @@ class FirebaseController extends Controller
 
         // Lấy device_token của người dùng dựa trên user_id
         $user = User::find($id);
-
+        if (!$user->device_token) {
+            return response()->json("Tài khoản này chưa có Device Token");
+        }
         $deviceTokens = [$user->device_token];
 
         $serverKey = 'AAAAv8d_Q0g:APA91bHwAswiq8GxEgvRqHK5N989MT12PcVHrlfnJDzib6zePmgC_ZillOxtg_v4lcvf2DrL9byIrmZT6lhu7pKK6ts2IyTP_fPoQatOmg1o80rGEx3vzLR1Y_cgYLfSCsjjQ7tFx7ZU'; // ADD SERVER KEY HERE PROVIDED BY FCM
@@ -73,6 +75,10 @@ public function sendNotification1(Request $request, $id)
     // Lấy device_token của người dùng dựa trên user_id
     $user = User::find($id);
 
+    if (!$user->device_token) {
+        return response()->json("Tài khoản này chưa có Device Token");
+    }
+    
     $deviceTokens = [$user->device_token];
 
     $serverKey = 'AAAAv8d_Q0g:APA91bHwAswiq8GxEgvRqHK5N989MT12PcVHrlfnJDzib6zePmgC_ZillOxtg_v4lcvf2DrL9byIrmZT6lhu7pKK6ts2IyTP_fPoQatOmg1o80rGEx3vzLR1Y_cgYLfSCsjjQ7tFx7ZU'; // ADD SERVER KEY HERE PROVIDED BY FCM
