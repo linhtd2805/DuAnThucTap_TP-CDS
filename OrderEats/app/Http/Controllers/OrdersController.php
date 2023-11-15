@@ -75,7 +75,7 @@ class OrdersController extends Controller
             $order = Orders::with('users', 'menus','shipper')->where('user_id',$user->id)->where('id',$id)->first();
     
             if (!$order) {
-                return response()->json(['error' => 'Order not found'], 404);
+                return response()->json(['error' => 'Đơn hàng này không có'], 404);
             }
 
             
@@ -123,27 +123,35 @@ class OrdersController extends Controller
         // Validate the user input
         $this->validate($request, [
             // "shipper_id" => "required",
-            "menu_id" => "required", 
-            "quantity" => "required",
+            "menu_id" => "required|integer", 
+            "quantity" => "required|integer",
+        ],[
+            "menu_id.required" => "bạn không được bỏ trống menu", 
+            "quantity.required" => "bạn không được bỏ trống số lượng",
+            "menu_id.string" => "kiểu dữ phải là so nguyen", 
+            "quantity.integer" => "kiểu dữ phải là số nguyen"
         ]);
 
-       
         $orders = new Orders();
+        $menu = Menus::find($request->input('menu_id'));
 
-        
-        
+        if (!$menu) {
+        return response()->json(['error' => 'Sản phẩm bạn lựa chọn không có !'], 404);
+        }
+
+        if ($menu->quantity < $request->input('quantity')) {
+            return response()->json(['error' => 'Số lượng trong menu không đủ'], 400);
+        }
+
+       
         $orders->user_id =  $user->id;
-        // $orders->shipper_id = $request->input('shipper_id');
+
         $orders->menu_id = $request->input('menu_id');
         $orders->quantity = $request->input('quantity');
 
-        // tham chiếu giá của bảng menus từ menu_id khóa ngoại của bảng orders
-        $menu = Menus::find($orders->menu_id);
+        $menu->quantity -= $orders->quantity;
+        $menu->save();
 
-        if (!$menu) {
-            return response()->json(['error' => 'Menu not found'], 404);
-        }
-            
         //tính tổng dựa vào giá của bảng menus và số lượng của order
         $total_price = $menu->price * $orders->quantity;
         $orders->total_price = $total_price;
@@ -187,7 +195,7 @@ class OrdersController extends Controller
         $orders = Orders::find($id);
         
         if (!$orders) {
-            return response()->json(['error' => 'Order not found'], 404);
+            return response()->json(['error' => 'Đơn hàng này không có'], 404);
         }
         
         // Kiểm tra xem request có chứa các trường không được phép sửa không
@@ -219,11 +227,11 @@ class OrdersController extends Controller
                $orders->order_status = $request->input('order_status');
                $fcm = new FirebaseController();
                $result = $fcm ->sendNotification($user->id, "Trạng Thái Hàng", "Đơn hàng đã nhận thành công");
-               $this->createActivityLog(auth()->user()->id, 'Đã giao');
+               $this->createActivityLog(auth()->user()->id, 'Đã  nhận');
         }else {
             return response()->json(['error' => 'Bạn không được thay đổi trạng thái đơn hàng hiện tại '], 403);
         } 
-        
+       
         
         
         $orders->save();
@@ -246,7 +254,7 @@ class OrdersController extends Controller
         $order = Orders::find($id);
     
         if (!$order) {
-            return response()->json(['error' => 'Order not found'], 404);
+            return response()->json(['error' => 'Đơn hàng này không có'], 404);
         }
     
         // Kiểm tra xem trạng thái order_status đã được đặt thành 'Hủy bỏ' hay chưa
@@ -257,7 +265,7 @@ class OrdersController extends Controller
         // Xóa đơn hàng hoàn toàn
         $order->delete();
     
-        return response()->json(['message' => 'Order has been deleted successfully']);
+        return response()->json(['message' => 'Xóa đơn hàng thành công']);
     }
     
 
